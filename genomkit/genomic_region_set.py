@@ -6,7 +6,7 @@ from genomkit import GRegion
 # IO functions
 ###########################################################################
 
-def load_BED(self, filename):
+def load_BED(filename):
     if not os.path.exists(filename):
         raise FileNotFoundError(f"The file '{filename}' does not exist.")
     else:
@@ -33,7 +33,7 @@ class GRegionSet:
         self.elements = []
         self.sorted = False
         self.name = name
-        if self.load:
+        if load:
             self.load(load)
 
     def __len__(self):
