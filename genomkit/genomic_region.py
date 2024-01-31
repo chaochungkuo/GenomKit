@@ -19,7 +19,7 @@ class GRegion:
     def __str__(self):
         return "{}:{}-{} {} {}".format(self.sequence,
                                        str(self.start), str(self.end),
-                                       self.orientation, self.name)
+                                       self.name, self.orientation)
 
     def __hash__(self):
         return hash((self.sequence, self.start,
@@ -48,17 +48,16 @@ class GRegion:
         return (self.sequence, self.start, self.end) >= \
                (other.sequence, other.start, other.end)
 
-    def extend(self, upstream: int, downstream: int,
+    def extend(self, upstream: int = 0, downstream: int = 0,
                strandness: bool = False, inplace: bool = True):
         """Extend GRegion region the given extension length.
         """
-        if strandness:
-            if self.orientation == "-":
-                new_start = max(0, self.start - downstream)
-                new_end = self.end + upstream
-            else:  # + or .
-                new_start = max(0, self.start - upstream)
-                new_end = self.end + downstream
+        if strandness and self.orientation == "-":
+            new_start = max(0, self.start - downstream)
+            new_end = self.end + upstream
+        else:  # + or .
+            new_start = max(0, self.start - upstream)
+            new_end = self.end + downstream
 
         if inplace:
             self.start = new_start
@@ -68,8 +67,8 @@ class GRegion:
                            end=new_end, name=self.name,
                            orientation=self.orientation, data=self.data)
 
-    def extend_percentage(self, upstream: float, downstream: float,
-                          strandness: bool = False, inplace: bool = True):
+    def extend_fold(self, upstream: float = 0.0, downstream: float = 0.0,
+                    strandness: bool = False, inplace: bool = True):
         """Extend GRegion region the given extension length in percentage.
         """
         upstream_length = int(len(self)*upstream)

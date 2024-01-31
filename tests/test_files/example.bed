@@ -1,0 +1,4 @@
+chr1    1000   2000   Feature1  0      +
+chr1    3000   4000   Feature2  0      -
+chr2    5000   6000   Feature3  0      +
+chr2    7000   8000   Feature4  0      -

@@ -1,12 +1,40 @@
+import os
+from genomkit import GRegion
+
+
+###########################################################################
+# IO functions
+###########################################################################
+
+def load_BED(self, filename):
+    if not os.path.exists(filename):
+        raise FileNotFoundError(f"The file '{filename}' does not exist.")
+    else:
+        res = GRegionSet()
+        with open(filename, 'r') as file:
+            for line in file:
+                if not line.startswith("#"):
+                    infos = line.strip().split()
+                    res.add(GRegion(sequence=infos[0],
+                                    start=int(infos[1]), end=int(infos[2]),
+                                    orientation=infos[5],
+                                    name=infos[3], score=infos[4]))
+        return res
+
+
+###########################################################################
+# GRegionSet
+###########################################################################
+
+
 class GRegionSet:
 
-    def __init__(self):
+    def __init__(self, name: str = "", load: str = ""):
         self.elements = []
         self.sorted = False
-
-    def add(self, region):
-        self.elements.append(region)
-        self.sorted = False
+        self.name = name
+        if self.load:
+            self.load(load)
 
     def __len__(self):
         return len(self.elements)
@@ -16,6 +44,29 @@ class GRegionSet:
 
     def __iter__(self):
         return iter(self.elements)
+
+    def add(self, region):
+        self.elements.append(region)
+        self.sorted = False
+
+    def load(self, filename):
+        regions = load_BED(filename=filename)
+        self.elements = regions.elements
+        self.sorted = False
+
+    def sort(self, key=None, reverse=False):
+        """Sort Elements by criteria defined by a GenomicRegion.
+
+        *Keyword arguments:*
+
+            - key -- given the key for comparison.
+            - reverse -- reverse the sorting result.
+        """
+        if key:
+            self.elements.sort(key=key, reverse=reverse)
+        else:
+            self.elements.sort()
+            self.sorted = True
 
     def get_chrom(self):
         """Return all chromosomes."""
@@ -51,6 +102,5 @@ class GRegionSet:
         :type inplace: boolean
         :return: None
         """
-        z = GRegionSet(name=self.name)
+        # z = GRegionSet(name=self.name)
         pass
-
