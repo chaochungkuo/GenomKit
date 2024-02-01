@@ -1,2 +1,2 @@
-from .genomic_region import GRegion
-from .genomic_region_set import GRegionSet
+from .genomic_regions.genomic_region import GRegion
+from .genomic_regions.genomic_regions import GRegions
