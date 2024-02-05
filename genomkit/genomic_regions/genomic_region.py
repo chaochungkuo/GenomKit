@@ -1,4 +1,11 @@
 class GRegion:
+    """
+    GRegion module
+
+    This module contains functions and classes for working with a genomic
+    region. It provides utilities for handling and analyzing a single genomic
+    coordinate.
+    """
     __slot__ = ["sequence", "start", "end", "orientation", "name", "score",
                 "data"]
 
