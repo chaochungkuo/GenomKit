@@ -1,7 +1,7 @@
-genomic_regions
-===============
+genomkit
+========
 
 .. toctree::
    :maxdepth: 4
 
-   genomic_regions
+   genomkit
