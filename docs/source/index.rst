@@ -13,3 +13,4 @@ Contents
    concept
    usage
    examples
+   modules
