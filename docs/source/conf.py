@@ -7,8 +7,6 @@ author = 'Chao-Chung Kuo'
 
 release = "0.0.0"
 
-# -- General configuration
-
 extensions = [
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
