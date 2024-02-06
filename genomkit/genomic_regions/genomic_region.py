@@ -139,8 +139,14 @@ class GRegion:
         """
         upstream_length = int(len(self)*upstream)
         downstream_length = int(len(self)*downstream)
-        self.extend(upstream=upstream_length, downstream=downstream_length,
-                    strandness=strandness, inplace=inplace)
+        if inplace:
+            self.extend(upstream=upstream_length, downstream=downstream_length,
+                        strandness=strandness, inplace=True)
+        else:
+            return self.extend(upstream=upstream_length,
+                               downstream=downstream_length,
+                               strandness=strandness,
+                               inplace=False)
 
     def overlap(self, region, strandness=False):
         """

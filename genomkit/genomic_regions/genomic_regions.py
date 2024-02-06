@@ -98,7 +98,7 @@ class GRegions:
             self.elements.sort()
             self.sorted = True
 
-    def get_chrom(self, unique=False):
+    def get_sequences(self, unique=False):
         """Return all chromosomes.
 
         :param unique: Only the unique names.
@@ -109,9 +109,10 @@ class GRegions:
         res = [r.sequence for r in self]
         if unique:
             res = list(set(res))
+            res.sort()
         return res
 
-    def get_names(self):
+    def get_names(self, unique=False):
         """Return a list of all region names. If the name is None,
         it return the region string.
 
@@ -119,6 +120,9 @@ class GRegions:
         :rtype: list
         """
         names = [r.name if r.name else r.toString() for r in self]
+        if unique:
+            names = list(set(names))
+            names.sort()
         return names
 
     def extend(self, upstream: int = 0, downstream: int = 0,
