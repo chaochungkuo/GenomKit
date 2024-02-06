@@ -333,7 +333,7 @@ class GRegions:
                 while cont_loop:
                     # When the regions overlap
                     if s.overlap(b[j]):
-                        if s.initial >= b[j].initial and s.final <= b[j].final:
+                        if s.start >= b[j].start and s.end <= b[j].end:
                             new_regions.add(s)
                         if not cont_overlap:
                             pre_inter = j
@@ -379,3 +379,84 @@ class GRegions:
         self.elements = list(set(self.elements))
         if sort:
             self.sort()
+
+    def merge(self, by_name=False, strandness=False, inplace=False):
+        """Merge the regions within the GRegions object.
+
+        :param name_distinct: Define whether to merge regions by name. If True,
+                              only the regions with the same name are merged.
+        :type name_distinct: bool
+        :param strandness: Define whether to merge the regions according to
+                           strandness.
+        :type strandness: bool
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object..
+        :type inplace: bool
+        :return: None or a GRegions.
+        :rtype: GRegions
+        """
+        if not self.sorted:
+            self.sort()
+        if len(self.elements) in [0, 1]:
+            if inplace:
+                return self
+            else:
+                pass
+        else:
+            res = GRegions(name=self.name)
+            prev_region = self.elements[0]
+            if not by_name and not strandness:
+                for cur_region in self.elements[1:]:
+                    if prev_region.overlap(cur_region):
+                        prev_region.start = min(prev_region.start,
+                                                cur_region.start)
+                        prev_region.end = max(prev_region.end,
+                                              cur_region.end)
+                    else:
+                        res.add(prev_region)
+                        prev_region = cur_region
+                res.add(prev_region)
+            elif by_name and not strandness:
+                for cur_region in self.elements[1:]:
+                    if (prev_region.overlap(cur_region)) and \
+                       (prev_region.name == cur_region.name):
+                        prev_region.start = min(prev_region.start,
+                                                cur_region.start)
+                        prev_region.end = max(prev_region.end,
+                                              cur_region.end)
+                    else:
+                        res.add(prev_region)
+                        prev_region = cur_region
+                res.add(prev_region)
+
+            elif not by_name and strandness:
+                for cur_region in self.elements[1:]:
+                    if (prev_region.overlap(cur_region)) and \
+                       (prev_region.orientation == cur_region.orientation):
+                        prev_region.start = min(prev_region.start,
+                                                cur_region.start)
+                        prev_region.end = max(prev_region.end,
+                                              cur_region.end)
+                    else:
+                        res.add(prev_region)
+                        prev_region = cur_region
+                res.add(prev_region)
+
+            elif by_name and strandness:
+                for cur_region in self.elements[1:]:
+                    if (prev_region.overlap(cur_region)) and \
+                       (prev_region.name == cur_region.name) and \
+                       (prev_region.orientation == cur_region.orientation):
+                        prev_region.start = min(prev_region.start,
+                                                cur_region.start)
+                        prev_region.end = max(prev_region.end,
+                                              cur_region.end)
+                    else:
+                        res.add(prev_region)
+                        prev_region = cur_region
+                res.add(prev_region)
+
+            if inplace:
+                return res
+            else:
+                self.elements = res.elements
