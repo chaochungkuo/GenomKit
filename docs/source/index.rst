@@ -13,4 +13,7 @@ Contents
    concept
    usage
    examples
-   modules
+   .. modules
+
+.. automodule:: genomkit.genomic_regions.genomic_region
+    :members:
