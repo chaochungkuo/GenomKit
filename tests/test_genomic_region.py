@@ -47,6 +47,28 @@ class TestGRegion(unittest.TestCase):
         region.extend_fold(downstream=2)
         self.assertEqual(len(region), 33)
 
+    def test_distance(self):
+        region1 = GRegion(name="test", sequence="chr1", start=10, end=20)
+        region2 = GRegion(name="test", sequence="chr1", start=25, end=30)
+        self.assertEqual(region1.distance(region2), 5)
+        region2 = GRegion(name="test", sequence="chr1", start=20, end=30)
+        self.assertEqual(region1.distance(region2), 0)
+        region2 = GRegion(name="test", sequence="chr1", start=15, end=30)
+        self.assertEqual(region1.distance(region2), 0)
+        region2 = GRegion(name="test", sequence="chr2", start=20, end=30)
+        self.assertEqual(region1.distance(region2), None)
+
+    def test_overlap(self):
+        region1 = GRegion(name="test", sequence="chr1", start=10, end=20)
+        region2 = GRegion(name="test", sequence="chr1", start=25, end=30)
+        self.assertEqual(region1.overlap(region2), False)
+        region2 = GRegion(name="test", sequence="chr1", start=20, end=30)
+        self.assertEqual(region1.overlap(region2), False)
+        region2 = GRegion(name="test", sequence="chr1", start=19, end=30)
+        self.assertEqual(region1.overlap(region2), True)
+        region2 = GRegion(name="test", sequence="chr2", start=19, end=30)
+        self.assertEqual(region1.overlap(region2), False)
+
 
 if __name__ == '__main__':
     unittest.main()

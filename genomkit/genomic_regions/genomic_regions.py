@@ -127,19 +127,17 @@ class GRegions:
         be negative values which shrinkages the regions.
 
         :param upstream: Define how many bp to extend toward upstream
-                         direction. If percentage is set True, it takes float
-                         as percentage. 0.5 for 50%, for example.
-        :type upstream: int or float
+                         direction.
+        :type upstream: int
         :param downstream: Define how many bp to extend toward downstream
-                          direction. If percentage is set True, it takes float
-                          as percentage. 0.5 for 50%, for example.
-        :type downstream: int or float
-        :param percentage: Define whether the input is percentage.
-        :type percentage: boolean
+                          direction.
+        :type downstream: int
+        :param strandness: Define whether strandness is considered.
+        :type strandness: bool
         :param inplace: Define whether this operation will be applied on the
-                        same object (True) or return a new object..
-        :type inplace: boolean
-        :return: None
+                        same object (True) or return a new object.
+        :type inplace: bool
+        :return: None or a GRegions object
         """
         if inplace:
             for region in self.elements:
@@ -162,19 +160,17 @@ class GRegions:
         """Perform extend step for every element. The extension length can also
         be negative values which shrinkages the regions.
 
-        :param upstream: Define how many bp to extend toward upstream
-                         direction. If percentage is set True, it takes float
-                         as percentage. 0.5 for 50%, for example.
-        :type upstream: int or float
-        :param downstream: Define how many bp to extend toward downstream
-                          direction. If percentage is set True, it takes float
-                          as percentage. 0.5 for 50%, for example.
-        :type downstream: int or float
-        :param percentage: Define whether the input is percentage.
-        :type percentage: boolean
+        :param upstream: Define the percentage of the region length to extend
+                         toward upstream direction.
+        :type upstream: float
+        :param downstream: Define the percentage of the region length to extend
+                           toward downstream direction.
+        :type downstream: float
+        :param strandness: Define whether strandness is considered.
+        :type strandness: bool
         :param inplace: Define whether this operation will be applied on the
                         same object (True) or return a new object..
-        :type inplace: boolean
+        :type inplace: bool
         :return: None
         """
         if inplace:
@@ -239,7 +235,7 @@ class GRegions:
                      "ORIGINAL", or "COMP_INCL".
         :type mode: str
         :param rm_duplicates: Define whether remove the duplicates.
-        :type rm_duplicates: boolean
+        :type rm_duplicates: bool
         :return: A GRegions.
         :rtype: GRegions
         """
