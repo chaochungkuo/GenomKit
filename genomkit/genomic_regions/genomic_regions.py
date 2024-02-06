@@ -1,5 +1,7 @@
 import os
 from genomkit import GRegion
+from .util import OverlapType
+import copy
 
 
 ###########################################################################
@@ -191,3 +193,194 @@ class GRegions:
                                        inplace=False)
                 output.add(r)
             return output
+
+    def intersect(self, target, mode="OVERLAP",
+                  rm_duplicates=False):
+        """Return a GRegions for the intersections between the two given
+        GRegions objects. There are three modes for overlapping:
+
+        *mode = "OVERLAP"*
+
+            Return a new GRegions including only the overlapping regions
+            with target GRegions.
+
+            .. note:: it will merge the regions.
+
+            ::
+
+                self       ----------              ------
+                target            ----------                    ----
+                Result            ---
+
+        *mode = "ORIGINAL"*
+
+            Return the regions of original GenomicRegionSet which have any
+            intersections with target GRegions.
+
+            ::
+
+                self       ----------              ------
+                target          ----------                    ----
+                Result     ----------
+
+        *mode = "COMP_INCL"*
+
+            Return region(s) of the GenomicRegionSet which are 'completely'
+            included by target GRegions.
+
+            ::
+
+                self        -------------             ------
+                target              ----------      ---------------       ----
+                Result                                ------
+
+        :param target: A target GRegions for finding overlaps.
+        :type target: GRegions
+        :param mode: The mode should be one of the followings: "OVERLAP",
+                     "ORIGINAL", or "COMP_INCL".
+        :type mode: str
+        :param rm_duplicates: Define whether remove the duplicates.
+        :type rm_duplicates: boolean
+        :return: A GRegions.
+        :rtype: GRegions
+        """
+        new_regions = GRegions(self.name)
+        if len(self) == 0 or len(target) == 0:
+            return new_regions
+        else:
+            a = copy.deepcopy(self)
+            b = copy.deepcopy(target)
+            if not a.sorted:
+                a.sort()
+            if not b.sorted:
+                b.sort()
+            if mode == OverlapType.OVERLAP:
+                a.merge()
+                b.merge()
+
+            iter_a = iter(a)
+            s = next(iter_a)
+            last_j = len(b) - 1
+            j = 0
+            cont_loop = True
+            pre_inter = 0
+            cont_overlap = False
+            # OverlapType.OVERLAP ###############################
+            if mode == OverlapType.OVERLAP:
+                while cont_loop:
+                    # When the regions overlap
+                    if s.overlap(b[j]):
+                        new_regions.add(GRegion(sequence=s.chrom,
+                                                start=max(s.start, b[j].start),
+                                                end=min(s.end, b[j].end),
+                                                name=s.name,
+                                                orientation=s.orientation,
+                                                data=s.data))
+                        if not cont_overlap:
+                            pre_inter = j
+                        if j == last_j:
+                            try:
+                                s = next(iter_a)
+                            except StopIteration:
+                                cont_loop = False
+                        else:
+                            j += 1
+                        cont_overlap = True
+
+                    elif s < b[j]:
+                        try:
+                            s = next(iter_a)
+                            if s.chrom == b[j].chrom and pre_inter > 0:
+                                j = pre_inter
+                            cont_overlap = False
+                        except StopIteration:
+                            cont_loop = False
+
+                    elif s > b[j]:
+                        if j == last_j:
+                            cont_loop = False
+                        else:
+                            j += 1
+                            cont_overlap = False
+                    else:
+                        try:
+                            s = next(iter_a)
+                        except StopIteration:
+                            cont_loop = False
+
+            # OverlapType.ORIGINAL ###############################
+            if mode == OverlapType.ORIGINAL:
+                while cont_loop:
+                    # When the regions overlap
+                    if s.overlap(b[j]):
+                        new_regions.add(s)
+                        try:
+                            s = next(iter_a)
+                        except StopIteration:
+                            cont_loop = False
+                    elif s < b[j]:
+                        try:
+                            s = next(iter_a)
+                        except StopIteration:
+                            cont_loop = False
+                    elif s > b[j]:
+                        if j == last_j:
+                            cont_loop = False
+                        else:
+                            j += 1
+                    else:
+                        try:
+                            s = next(iter_a)
+                        except StopIteration:
+                            cont_loop = False
+            # OverlapType.COMP_INCL ###############################
+            if mode == OverlapType.COMP_INCL:
+                while cont_loop:
+                    # When the regions overlap
+                    if s.overlap(b[j]):
+                        if s.initial >= b[j].initial and s.final <= b[j].final:
+                            new_regions.add(s)
+                        if not cont_overlap:
+                            pre_inter = j
+                        if j == last_j:
+                            try:
+                                s = next(iter_a)
+                            except StopIteration:
+                                cont_loop = False
+                        else:
+                            j += 1
+                        cont_overlap = True
+
+                    elif s < b[j]:
+                        try:
+                            s = next(iter_a)
+                            if s.chrom == b[j].chrom and pre_inter > 0:
+                                j = pre_inter
+                            cont_overlap = False
+                        except StopIteration:
+                            cont_loop = False
+
+                    elif s > b[j]:
+                        if j == last_j:
+                            cont_loop = False
+                        else:
+                            j += 1
+                            cont_overlap = False
+                    else:
+                        try:
+                            s = next(iter_a)
+                        except StopIteration:
+                            cont_loop = False
+
+            if rm_duplicates:
+                new_regions.remove_duplicates()
+            # new_regions.sort()
+            return new_regions
+
+    def remove_duplicates(self, sort=True):
+        """
+        Remove any duplicate regions (sorted, by default).
+        """
+        self.elements = list(set(self.elements))
+        if sort:
+            self.sort()
