@@ -1,5 +1,6 @@
 import unittest
 from genomkit import GRegions
+from genomkit.genomic_regions.genomic_regions import load_BED
 import os
 
 script_path = os.path.dirname(__file__)
@@ -60,6 +61,65 @@ class TestGRegions(unittest.TestCase):
                                                "Feature3", "Feature4"])
         self.assertEqual(regions.get_names(unique=True),
                          ["Feature1", "Feature2", "Feature3", "Feature4"])
+
+    def test_intersect(self):
+        regions1 = GRegions(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/example.bed"))
+        regions2 = GRegions(name="test")
+        regions2.load(filename=os.path.join(script_path,
+                                            "test_files/example2.bed"))
+        intersect = regions1.intersect(regions2, mode='OVERLAP')
+        self.assertEqual(len(intersect), 4)
+        self.assertEqual(len(intersect[0]), 500)
+        self.assertEqual(len(intersect[1]), 500)
+        self.assertEqual(len(intersect[2]), 500)
+        self.assertEqual(len(intersect[3]), 500)
+        intersect = regions1.intersect(regions2, mode='ORIGINAL')
+        self.assertEqual(len(intersect), 4)
+        self.assertEqual(len(intersect[0]), 1000)
+        self.assertEqual(len(intersect[1]), 1000)
+        self.assertEqual(len(intersect[2]), 1000)
+        self.assertEqual(len(intersect[3]), 1000)
+        intersect = regions1.intersect(regions2, mode='COMP_INCL')
+        self.assertEqual(len(intersect), 0)
+
+    def test_merge(self):
+        regions = GRegions(name="test")
+        regions.load(filename=os.path.join(script_path,
+                                           "test_files/example3.bed"))
+        merged = regions.merge()
+        self.assertEqual(len(merged), 2)
+        self.assertEqual(len(merged[0]), 1000)
+        self.assertEqual(len(merged[1]), 1000)
+        merged = regions.merge(strandness=True)
+        self.assertEqual(len(merged), 3)
+        self.assertEqual(len(merged[0]), 1000)
+        regions.merge(inplace=True)
+        self.assertEqual(len(regions), 2)
+        self.assertEqual(len(regions[0]), 1000)
+        self.assertEqual(len(regions[1]), 1000)
+
+    def test_remove_duplicates(self):
+        regions = GRegions(name="test")
+        regions.load(filename=os.path.join(script_path,
+                                           "test_files/example4.bed"))
+        regions.remove_duplicates()
+        self.assertEqual(len(regions), 4)
+
+    def test_sort(self):
+        regions = GRegions(name="test")
+        regions.load(filename=os.path.join(script_path,
+                                           "test_files/example4.bed"))
+        regions.sort()
+        self.assertEqual(len(regions), 6)
+        self.assertEqual(regions.get_sequences(),
+                         ["chr1", "chr1", "chr1", "chr2", "chr2", "chr2"])
+    
+    def test_load_BED(self):
+        regions = load_BED(filename=os.path.join(script_path,
+                                                 "test_files/example4.bed"))
+        self.assertEqual(len(regions), 6)
 
 
 if __name__ == '__main__':

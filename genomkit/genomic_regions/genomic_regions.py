@@ -269,7 +269,7 @@ class GRegions:
                 while cont_loop:
                     # When the regions overlap
                     if s.overlap(b[j]):
-                        new_regions.add(GRegion(sequence=s.chrom,
+                        new_regions.add(GRegion(sequence=s.sequence,
                                                 start=max(s.start, b[j].start),
                                                 end=min(s.end, b[j].end),
                                                 name=s.name,
@@ -289,7 +289,7 @@ class GRegions:
                     elif s < b[j]:
                         try:
                             s = next(iter_a)
-                            if s.chrom == b[j].chrom and pre_inter > 0:
+                            if s.sequence == b[j].sequence and pre_inter > 0:
                                 j = pre_inter
                             cont_overlap = False
                         except StopIteration:
@@ -353,7 +353,7 @@ class GRegions:
                     elif s < b[j]:
                         try:
                             s = next(iter_a)
-                            if s.chrom == b[j].chrom and pre_inter > 0:
+                            if s.sequence == b[j].sequence and pre_inter > 0:
                                 j = pre_inter
                             cont_overlap = False
                         except StopIteration:
@@ -461,6 +461,6 @@ class GRegions:
                 res.add(prev_region)
 
             if inplace:
-                return res
-            else:
                 self.elements = res.elements
+            else:
+                return res
