@@ -1,7 +1,7 @@
 
 
-.. automodule:: genomkit.GRegion
+.. automodule:: genomkit.genomic_regions.genomic_region
     :members:
 
-.. automodule:: genomkit.GRegions
+.. automodule:: genomkit.genomic_regions.genomic_regions
     :members:
