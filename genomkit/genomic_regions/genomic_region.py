@@ -12,6 +12,24 @@ class GRegion:
     def __init__(self, sequence: str, start: int, end: int,
                  orientation: str = ".",
                  name: str = "", score: float = 0, data: list = []):
+        """Create a GRegion object.
+
+        :param sequence: sequence name such as chr2
+        :type sequence: str
+        :param start: starting position
+        :type start: int
+        :param end: ending position
+        :type end: int
+        :param orientation: orientation of the region "+", "-" or "."
+                            (defaults to ".")
+        :type orientation: str, optional
+        :param name: Name of the region, defaults to ""
+        :type name: str, optional
+        :param score: Score of the region, defaults to 0
+        :type score: float, optional
+        :param data: Further data of the region, defaults to []
+        :type data: list, optional
+        """
         self.sequence = sequence
         self.start = start
         self.end = end
@@ -21,9 +39,21 @@ class GRegion:
         self.data = data
 
     def __len__(self):
+        """
+        Return the length of the region.
+
+        :return: length
+        :rtype: int
+        """
         return abs(self.start - self.end)
 
     def __str__(self):
+        """
+        Return the string format of the region in the form such as 'chr4:400-500 name orientation'
+
+        :return: string of the region
+        :rtype: str
+        """
         return "{}:{}-{} {} {}".format(self.sequence,
                                        str(self.start), str(self.end),
                                        self.name, self.orientation)
@@ -67,10 +97,10 @@ class GRegion:
                           direction.
         :type downstream: int
         :param strandness: Define whether strandness is considered.
-        :type strandness: boolean
+        :type strandness: bool
         :param inplace: Define whether this operation will be applied on the
                         same object (True) or return a new object..
-        :type inplace: boolean
+        :type inplace: bool
         :return: None or a GRegion object
         """
         if strandness and self.orientation == "-":
@@ -100,10 +130,10 @@ class GRegion:
                            toward downstream direction.
         :type downstream: float
         :param strandness: Define whether strandness is considered.
-        :type strandness: boolean
+        :type strandness: bool
         :param inplace: Define whether this operation will be applied on the
                         same object (True) or return a new object..
-        :type inplace: boolean
+        :type inplace: bool
         :return: None or a GRegion object
         """
         upstream_length = int(len(self)*upstream)
@@ -112,7 +142,15 @@ class GRegion:
                     strandness=strandness, inplace=inplace)
 
     def overlap(self, region, strandness=False):
-        """Return True, if GRegion overlaps with the given region, else False.
+        """
+        Return True, if GRegion overlaps with the given region, else False.
+
+        :param region: A given GRegion object
+        :type region: GRegion
+        :param strandness: Define whether strandness is considered.
+        :type strandness: bool
+        :return: True or False
+        :rtype: bool
         """
         if region.sequence == self.sequence:
             if self.start <= region.start:
@@ -130,8 +168,14 @@ class GRegion:
         return False
 
     def distance(self, region):
-        """Return the distance between two GRegions. If overlapping, return 0;
+        """
+        Return the distance between two GRegions. If overlapping, return 0;
         if on different chromosomes, return None.
+
+        :param region: A given GRegion object
+        :type region: GRegion
+        :return: distance
+        :rtype: int or None if distance is not available
         """
         if self.sequence == region.sequence:
             if self.overlap(region):
