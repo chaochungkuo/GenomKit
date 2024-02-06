@@ -49,7 +49,8 @@ class GRegion:
 
     def __str__(self):
         """
-        Return the string format of the region in the form such as 'chr4:400-500 name orientation'
+        Return the string format of the region in the form such as
+        'chr4:400-500 name orientation'
 
         :return: string of the region
         :rtype: str

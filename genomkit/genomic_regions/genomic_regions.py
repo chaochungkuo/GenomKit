@@ -28,7 +28,13 @@ def load_BED(filename):
 
 
 class GRegions:
+    """
+    GRegions module
 
+    This module contains functions and classes for working with a collection of
+    genomic regions. It provides utilities for handling and analyzing the
+    interactions of many genomic coordinates.
+    """
     def __init__(self, name: str = "", load: str = ""):
         self.elements = []
         self.sorted = False
