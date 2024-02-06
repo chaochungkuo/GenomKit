@@ -2,7 +2,7 @@ Welcome to Genomkit's documentation!
 ===================================
 
 
-.. image:: ../images/genomkit_scheme.png
+.. image:: ./images/genomkit_scheme.png
    :alt: Scheme of Genomkit modules
 
 .. note::
