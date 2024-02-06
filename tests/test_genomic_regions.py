@@ -115,11 +115,17 @@ class TestGRegions(unittest.TestCase):
         self.assertEqual(len(regions), 6)
         self.assertEqual(regions.get_sequences(),
                          ["chr1", "chr1", "chr1", "chr2", "chr2", "chr2"])
-    
+
     def test_load_BED(self):
         regions = load_BED(filename=os.path.join(script_path,
                                                  "test_files/example4.bed"))
         self.assertEqual(len(regions), 6)
+
+    def test_sampling(self):
+        regions = load_BED(filename=os.path.join(script_path,
+                                                 "test_files/example4.bed"))
+        sampling = regions.sampling(size=3)
+        self.assertEqual(len(sampling), 3)
 
 
 if __name__ == '__main__':

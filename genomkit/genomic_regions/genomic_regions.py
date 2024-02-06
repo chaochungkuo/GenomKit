@@ -1,4 +1,5 @@
 import os
+import random
 from genomkit import GRegion
 import copy
 
@@ -7,7 +8,7 @@ import copy
 # IO functions
 ###########################################################################
 
-def load_BED(filename):
+def load_BED(filename: str):
     if not os.path.exists(filename):
         raise FileNotFoundError(f"The file '{filename}' does not exist.")
     else:
@@ -74,7 +75,7 @@ class GRegions:
         self.elements.append(region)
         self.sorted = False
 
-    def load(self, filename):
+    def load(self, filename: str):
         """Load a BED file into the GRegions.
 
         :param filename: Path to the BED file
@@ -84,7 +85,7 @@ class GRegions:
         self.elements = regions.elements
         self.sorted = False
 
-    def sort(self, key=None, reverse=False):
+    def sort(self, key=None, reverse: bool = False):
         """Sort elements by criteria defined by a GenomicRegion.
 
         :param key: Given the key for comparison.
@@ -98,7 +99,7 @@ class GRegions:
             self.elements.sort()
             self.sorted = True
 
-    def get_sequences(self, unique=False):
+    def get_sequences(self, unique: bool = False):
         """Return all chromosomes.
 
         :param unique: Only the unique names.
@@ -112,7 +113,7 @@ class GRegions:
             res.sort()
         return res
 
-    def get_names(self, unique=False):
+    def get_names(self, unique: bool = False):
         """Return a list of all region names. If the name is None,
         it return the region string.
 
@@ -193,8 +194,8 @@ class GRegions:
                 output.add(r)
             return output
 
-    def intersect(self, target, mode="OVERLAP",
-                  rm_duplicates=False):
+    def intersect(self, target, mode: str = "OVERLAP",
+                  rm_duplicates: bool = False):
         """Return a GRegions for the intersections between the two given
         GRegions objects. There are three modes for overlapping:
 
@@ -376,7 +377,7 @@ class GRegions:
             # new_regions.sort()
             return new_regions
 
-    def remove_duplicates(self, sort=True):
+    def remove_duplicates(self, sort: bool = True):
         """
         Remove any duplicate regions (sorted, by default).
         """
@@ -384,7 +385,8 @@ class GRegions:
         if sort:
             self.sort()
 
-    def merge(self, by_name=False, strandness=False, inplace=False):
+    def merge(self, by_name: bool = False, strandness: bool = False,
+              inplace: bool = False):
         """Merge the regions within the GRegions object.
 
         :param name_distinct: Define whether to merge regions by name. If True,
@@ -464,3 +466,72 @@ class GRegions:
                 self.elements = res.elements
             else:
                 return res
+
+    def sampling(self, size: int, seed: int = None):
+        """Return a sampling of the elements with a sampling number.
+
+        :param size: Sampling number
+        :type size: int
+        :param seed: Seed for randomness, defaults to None
+        :type seed: int, optional
+        :return: Sampling regions
+        :rtype: GRegions
+        """
+        if seed:
+            random.seed(seed)
+        res = GRegions(name="sampling")
+        sampling = random.sample(range(len(self)), size)
+        for i in sampling:
+            res.add(self.elements[i])
+        return res
+
+    def split(self, ratio: float, size: int = None, seed: int = None):
+        """Split the elements into two GRegions with the defined sizes.
+
+        :param ratio: Define the ratio for splitting
+        :type ratio: float, optional
+        :param size: Define the size of the first GRegions, defaults to None
+        :type size: int, optional
+        :param seed: _description_, defaults to None
+        :type seed: int, optional
+        :return: Two GRegions
+        :rtype: GRegions
+        """
+        if seed:
+            random.seed(seed)
+        if size:
+            sampling = random.sample(range(len(self)), size)
+        elif ratio and not size:
+            size = int(len(self)*ratio)
+            sampling = random.sample(range(len(self)), size)
+        a = GRegions(name=self.name+"_split1")
+        b = GRegions(name=self.name+"_split2")
+        for i in range(len(self)):
+            if i in sampling:
+                a.add(self.elements[i])
+            else:
+                b.add(self.elements[i])
+        return a, b
+
+    def close_regions(self, target, max_dis=10000):
+        """Return a new GRegions including the region(s) of target which are
+        closest to any self region.
+        If there are intersection, return False.
+
+        :param target: the GRegions which to compare with
+        :type target: GRegions
+        :param max_dis: maximum distance, defaults to 10000
+        :type max_dis: int, optional
+        :return: Close regions
+        :rtype: GRegions
+        """
+        if not self.sorted:
+            self.sort()
+        if not target.sorted:
+            target.sort()
+
+        extended_regions = self.extend(upstream=max_dis, downstream=max_dis,
+                                       inplace=False)
+        potential_targets = target.intersect(extended_regions,
+                                             mode="ORIGINAL")
+        return potential_targets
