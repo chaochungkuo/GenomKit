@@ -57,7 +57,8 @@ class GRegion:
 
     def extend(self, upstream: int = 0, downstream: int = 0,
                strandness: bool = False, inplace: bool = True):
-        """Extend GRegion region the given extension length.
+        """
+        Extend GRegion region with the given extension length.
 
         :param upstream: Define how many bp to extend toward upstream
                          direction.
@@ -89,7 +90,21 @@ class GRegion:
 
     def extend_fold(self, upstream: float = 0.0, downstream: float = 0.0,
                     strandness: bool = False, inplace: bool = True):
-        """Extend GRegion region the given extension length in percentage.
+        """
+        Extend GRegion region with the given extension length in percentage.
+
+        :param upstream: Define the percentage of the region length to extend
+                         toward upstream direction.
+        :type upstream: float
+        :param downstream: Define the percentage of the region length to extend
+                           toward downstream direction.
+        :type downstream: float
+        :param strandness: Define whether strandness is considered.
+        :type strandness: boolean
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object..
+        :type inplace: boolean
+        :return: None or a GRegion object
         """
         upstream_length = int(len(self)*upstream)
         downstream_length = int(len(self)*downstream)
