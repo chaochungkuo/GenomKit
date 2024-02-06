@@ -1,6 +1,5 @@
 import os
 from genomkit import GRegion
-from .util import OverlapType
 import copy
 
 
@@ -254,7 +253,7 @@ class GRegions:
                 a.sort()
             if not b.sorted:
                 b.sort()
-            if mode == OverlapType.OVERLAP:
+            if mode == "OVERLAP":
                 a.merge()
                 b.merge()
 
@@ -265,8 +264,8 @@ class GRegions:
             cont_loop = True
             pre_inter = 0
             cont_overlap = False
-            # OverlapType.OVERLAP ###############################
-            if mode == OverlapType.OVERLAP:
+            # OVERLAP ###############################
+            if mode == "OVERLAP":
                 while cont_loop:
                     # When the regions overlap
                     if s.overlap(b[j]):
@@ -308,8 +307,8 @@ class GRegions:
                         except StopIteration:
                             cont_loop = False
 
-            # OverlapType.ORIGINAL ###############################
-            if mode == OverlapType.ORIGINAL:
+            # ORIGINAL ###############################
+            if mode == "ORIGINAL":
                 while cont_loop:
                     # When the regions overlap
                     if s.overlap(b[j]):
@@ -333,8 +332,8 @@ class GRegions:
                             s = next(iter_a)
                         except StopIteration:
                             cont_loop = False
-            # OverlapType.COMP_INCL ###############################
-            if mode == OverlapType.COMP_INCL:
+            # COMP_INCL ###############################
+            if mode == "COMP_INCL":
                 while cont_loop:
                     # When the regions overlap
                     if s.overlap(b[j]):
