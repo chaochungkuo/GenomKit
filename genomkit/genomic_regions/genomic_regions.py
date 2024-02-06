@@ -36,6 +36,14 @@ class GRegions:
     interactions of many genomic coordinates.
     """
     def __init__(self, name: str = "", load: str = ""):
+        """Create an empty GRegions object. If a path to a BED file is defined
+        in "load", all the regions will be loaded.
+
+        :param name: Name of this GRegions, defaults to ""
+        :type name: str, optional
+        :param load: Path to a BED file, defaults to ""
+        :type load: str, optional
+        """
         self.elements = []
         self.sorted = False
         self.name = name
@@ -43,6 +51,11 @@ class GRegions:
             self.load(load)
 
     def __len__(self):
+        """Return the number of regions in this GRegions.
+
+        :return: Number of regions
+        :rtype: int
+        """
         return len(self.elements)
 
     def __getitem__(self, key):
@@ -52,21 +65,31 @@ class GRegions:
         return iter(self.elements)
 
     def add(self, region):
+        """Append a GRegion at the end of the elements of GRegions.
+
+        :param region: A GRegion
+        :type region: GRegion
+        """
         self.elements.append(region)
         self.sorted = False
 
     def load(self, filename):
+        """Load a BED file into the GRegions.
+
+        :param filename: Path to the BED file
+        :type filename: str
+        """
         regions = load_BED(filename=filename)
         self.elements = regions.elements
         self.sorted = False
 
     def sort(self, key=None, reverse=False):
-        """Sort Elements by criteria defined by a GenomicRegion.
+        """Sort elements by criteria defined by a GenomicRegion.
 
-        *Keyword arguments:*
-
-            - key -- given the key for comparison.
-            - reverse -- reverse the sorting result.
+        :param key: Given the key for comparison.
+        :type key: str
+        :param reverse: Reverse the sorting result.
+        :type reverse: bool
         """
         if key:
             self.elements.sort(key=key, reverse=reverse)
@@ -74,19 +97,27 @@ class GRegions:
             self.elements.sort()
             self.sorted = True
 
-    def get_chrom(self):
-        """Return all chromosomes."""
-        return [r.sequence for r in self]
+    def get_chrom(self, unique=False):
+        """Return all chromosomes.
+
+        :param unique: Only the unique names.
+        :type unique: bool
+        :return: A list of all chromosomes.
+        :rtype: list
+        """
+        res = [r.sequence for r in self]
+        if unique:
+            res = list(set(res))
+        return res
 
     def get_names(self):
         """Return a list of all region names. If the name is None,
-        it return the region string."""
-        names = []
-        for r in self:
-            if r.name:
-                names.append(r.name)
-            else:
-                names.append(r.toString())
+        it return the region string.
+
+        :return: A list of all regions' names.
+        :rtype: list
+        """
+        names = [r.name if r.name else r.toString() for r in self]
         return names
 
     def extend(self, upstream: int = 0, downstream: int = 0,
