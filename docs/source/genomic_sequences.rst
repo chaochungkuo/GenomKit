@@ -1,13 +1,13 @@
 Genomic Sequences
 =======================
 
-.. automodule:: genomkit.genomic_sequences
+.. automodule:: genomkit.sequences
     :members:
 
 
-.. automodule:: genomkit.genomic_sequences.genomic_sequence
+.. automodule:: genomkit.sequences.genomic_sequence
     :members:
 
 
-.. automodule:: genomkit.genomic_sequences.genomic_sequences
+.. automodule:: genomkit.sequences.genomic_sequences
     :members:
