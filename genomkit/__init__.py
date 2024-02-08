@@ -4,4 +4,4 @@ from .genomic_sequences.genomic_sequence import GSequence
 from .genomic_sequences.genomic_sequences import GSequences
 
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
