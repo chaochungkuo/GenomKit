@@ -557,3 +557,17 @@ class GRegions:
         for r in regions:
             bool_array[r.start:r.end] = True
         return bool_array
+
+    # def intersect_array(self, target):
+    #     list_seq_self = self.get_sequences(unique=True)
+    #     list_seq_target = target.get_sequences(unique=True)
+    #     common_seq = [seq for seq in list_seq_self if seq in list_seq_target]
+    #     for seq in common_seq:
+    #         array_1 = self.get_array_by_seq(sequence=seq)
+    #         array_2 = target.get_array_by_seq(sequence=seq)
+    #         result_array = array_1 & array_2
+    #         true_indices = np.where(result_array)[0]
+    #         for i in true_indices:
+    #             # if 
+
+            
