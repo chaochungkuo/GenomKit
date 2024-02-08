@@ -1,4 +1,4 @@
-Genomic Regions
+Genomic Sequences
 =======================
 
 .. automodule:: genomkit.genomic_sequences
