@@ -8,7 +8,6 @@ import numpy as np
 ###########################################################################
 # IO functions
 ###########################################################################
-
 def load_BED(filename: str):
     if not os.path.exists(filename):
         raise FileNotFoundError(f"The file '{filename}' does not exist.")
@@ -28,8 +27,6 @@ def load_BED(filename: str):
 ###########################################################################
 # GRegions
 ###########################################################################
-
-
 class GRegions:
     """
     GRegions module
