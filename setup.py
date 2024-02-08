@@ -51,7 +51,7 @@ setup(
     url='https://github.com/chaochungkuo/genomkit',
     packages=find_packages(),
     install_requires=[
-        'Click', "numpy"
+        'Click', "numpy==1.26.4", "pysam==0.22.0"
     ],
     # entry_points={
     #     'console_scripts': [
