@@ -24,5 +24,6 @@ Contents
    usage
    examples
    genomic_sequences
+   genomic_reads
    genomic_regions
 
