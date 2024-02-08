@@ -23,6 +23,6 @@ Contents
    concept
    usage
    examples
-   genomic_regions
    genomic_sequences
+   genomic_regions
 
