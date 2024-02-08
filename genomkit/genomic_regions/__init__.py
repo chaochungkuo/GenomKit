@@ -1,6 +1,3 @@
-from genomic_region import GRegion
-from genomic_regions import GRegions
-
 """
 Genomic Regions Module
 
