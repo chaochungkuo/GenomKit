@@ -50,9 +50,9 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/chaochungkuo/genomkit',
     packages=find_packages(),
-    # install_requires=[
-    #     'Click', "pandas", "pyyaml"
-    # ],
+    install_requires=[
+        'Click', "numpy"
+    ],
     # entry_points={
     #     'console_scripts': [
     #         'gpm=gpm.main:main',

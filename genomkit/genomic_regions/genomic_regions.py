@@ -2,6 +2,7 @@ import os
 import random
 from genomkit import GRegion
 import copy
+import numpy as np
 
 
 ###########################################################################
@@ -535,3 +536,24 @@ class GRegions:
         potential_targets = target.intersect(extended_regions,
                                              mode="ORIGINAL")
         return potential_targets
+
+    def get_elements_by_seq(self, sequence: str, orientation: str = None):
+        if orientation is None:
+            regions = GRegions(name=sequence)
+            regions.elements = [r for r in self.elements
+                                if r.sequence == sequence]
+        else:
+            regions = GRegions(name=sequence+" "+orientation)
+            regions.elements = [r for r in self.elements
+                                if r.sequence == sequence and
+                                r.orientation == orientation]
+        return regions
+
+    def get_array_by_seq(self, sequence: str, orientation: str):
+        regions = self.get_elements_by_seq(sequence=sequence,
+                                           orientation=orientation)
+        max_position = max([r.end for r in regions])
+        bool_array = np.full(max_position, False, dtype=bool)
+        for r in regions:
+            bool_array[r.start:r.end] = True
+        return bool_array
