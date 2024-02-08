@@ -1,1 +1,1 @@
-sphinx-apidoc --force -o . ../../genomkit/genomic_regions
+sphinx-apidoc --force -o . ../../genomkit/regions

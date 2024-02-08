@@ -1,6 +1,6 @@
 import unittest
 from genomkit import GRegions
-from genomkit.genomic_regions.genomic_regions import load_BED
+from genomkit.regions.io import load_BED
 import os
 
 script_path = os.path.dirname(__file__)

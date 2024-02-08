@@ -1,12 +1,12 @@
 Genomic Regions
 =======================
 
-.. automodule:: genomkit.genomic_regions
+.. automodule:: genomkit.regions
     :members:
 
-.. automodule:: genomkit.genomic_regions.genomic_region
+.. automodule:: genomkit.regions.genomic_region
     :members:
 
-.. automodule:: genomkit.genomic_regions.genomic_regions
+.. automodule:: genomkit.regions.genomic_regions
     :members:
     
