@@ -11,17 +11,17 @@ class TestGRegions(unittest.TestCase):
     def test_len(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example.bed"))
+                                           "test_files/bed/example.bed"))
         self.assertEqual(len(regions), 4)
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/genes_Gencode_hg38_chr22.bed"))
+                     "test_files/bed/genes_Gencode_hg38_chr22.bed"))
         self.assertEqual(len(regions), 1372)
 
     def test_extend(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example.bed"))
+                                           "test_files/bed/example.bed"))
         self.assertEqual(regions.extend(upstream=100,
                                         inplace=False)[0].start, 900)
         self.assertEqual(regions.extend(upstream=100,
@@ -34,7 +34,7 @@ class TestGRegions(unittest.TestCase):
     def test_extend_fold(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example.bed"))
+                                           "test_files/bed/example.bed"))
         self.assertEqual(regions.extend_fold(upstream=0.1,
                                              inplace=False)[0].start, 900)
         self.assertEqual(regions.extend_fold(upstream=0.1,
@@ -47,7 +47,7 @@ class TestGRegions(unittest.TestCase):
     def test_get_sequences(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example.bed"))
+                                           "test_files/bed/example.bed"))
         self.assertEqual(regions.get_sequences(),
                          ["chr1", "chr1", "chr2", "chr2"])
         self.assertEqual(regions.get_sequences(unique=True),
@@ -56,7 +56,7 @@ class TestGRegions(unittest.TestCase):
     def test_get_names(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example.bed"))
+                                           "test_files/bed/example.bed"))
         self.assertEqual(regions.get_names(), ["Feature1", "Feature2",
                                                "Feature3", "Feature4"])
         self.assertEqual(regions.get_names(unique=True),
@@ -65,10 +65,10 @@ class TestGRegions(unittest.TestCase):
     def test_intersect(self):
         regions1 = GRegions(name="test")
         regions1.load(filename=os.path.join(script_path,
-                                            "test_files/example.bed"))
+                                            "test_files/bed/example.bed"))
         regions2 = GRegions(name="test")
         regions2.load(filename=os.path.join(script_path,
-                                            "test_files/example2.bed"))
+                                            "test_files/bed/example2.bed"))
         intersect = regions1.intersect(regions2, mode='OVERLAP')
         self.assertEqual(len(intersect), 4)
         self.assertEqual(len(intersect[0]), 500)
@@ -87,7 +87,7 @@ class TestGRegions(unittest.TestCase):
     def test_merge(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example3.bed"))
+                                           "test_files/bed/example3.bed"))
         merged = regions.merge()
         self.assertEqual(len(merged), 2)
         self.assertEqual(len(merged[0]), 1000)
@@ -103,14 +103,14 @@ class TestGRegions(unittest.TestCase):
     def test_remove_duplicates(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example4.bed"))
+                                           "test_files/bed/example4.bed"))
         regions.remove_duplicates()
         self.assertEqual(len(regions), 4)
 
     def test_sort(self):
         regions = GRegions(name="test")
         regions.load(filename=os.path.join(script_path,
-                                           "test_files/example4.bed"))
+                                           "test_files/bed/example4.bed"))
         regions.sort()
         self.assertEqual(len(regions), 6)
         self.assertEqual(regions.get_sequences(),
@@ -118,12 +118,12 @@ class TestGRegions(unittest.TestCase):
 
     def test_load_BED(self):
         regions = load_BED(filename=os.path.join(script_path,
-                                                 "test_files/example4.bed"))
+                           "test_files/bed/example4.bed"))
         self.assertEqual(len(regions), 6)
 
     def test_sampling(self):
         regions = load_BED(filename=os.path.join(script_path,
-                                                 "test_files/example4.bed"))
+                           "test_files/bed/example4.bed"))
         sampling = regions.sampling(size=3)
         self.assertEqual(len(sampling), 3)
 
