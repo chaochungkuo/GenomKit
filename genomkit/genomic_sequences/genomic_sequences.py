@@ -58,3 +58,56 @@ class GSequences:
         else:
             raise ValueError("Unsupported file format")
         self.elements = res.elements
+
+    def complement(self):
+        """Convert the sequences into complement sequences.
+        """
+        for seq in self.elements:
+            seq.complement()
+
+    def reverse(self):
+        """Convert the sequences into reverse sequences.
+        """
+        for seq in self.elements:
+            seq.reverse()
+
+    def reverse_complement(self):
+        """Convert the sequences into reverse complement sequences.
+        """
+        for seq in self.elements:
+            seq.reverse_complement()
+
+    def trim(self, start: int = 0, end: int = 0):
+        """Remove the nucleotides from the starting or ending according to the
+        defined length.
+
+        :param start: Define the length to remove from starting, defaults to 0
+        :type start: int, optional
+        :param end: Define the length to remove from ending, defaults to 0
+        :type end: int, optional
+        """
+        for seq in self.elements:
+            seq.trim(start=start, end=end)
+
+    def dna2rna(self):
+        """Convert DNA sequences to RNA sequences by replacing "T" with "U"."""
+        for seq in self.elements:
+            seq.dna2rna()
+
+    def rna2dna(self):
+        """Convert RNA sequences to DNA sequences by replacing "U" with "T"."""
+        for seq in self.elements:
+            seq.rna2dna()
+
+    def count_table(self):
+        """Return a dictionary for the counting frequency of all nucleic acids.
+
+        :return: A count table
+        :rtype: dict
+        """
+        result = {}
+        for seq in self.elements:
+            count_dict = seq.count_table()
+            for key, count in count_dict.items():
+                result[key] = result.get(key, 0) + count
+        return result
