@@ -17,12 +17,12 @@ peaks = GRegions(name="genes", load=peaks_bed_file)
 print(len(peaks))
 
 
-@profile
+@profile # noqa
 def time_intersect_python():
     intersect = peaks.intersect_python(genes)
 
 
-@profile
+@profile # noqa
 def time_intersect_array():
     intersect = peaks.intersect_array(genes)
 
