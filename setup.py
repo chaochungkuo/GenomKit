@@ -3,14 +3,11 @@ import io
 import os
 import re
 from setuptools import setup, find_packages
-# from os import path, makedirs
-# from shutil import copytree
+
 
 #############################################################
 # Get version
 #############################################################
-
-
 def read(*names, **kwargs):
     with io.open(
         os.path.join(os.path.dirname(__file__), *names),
@@ -34,6 +31,9 @@ current_version = find_version("genomkit", "__init__.py")
 #############################################################
 # Setup function
 #############################################################
+# Read the requirements from requirements.txt
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -50,9 +50,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/chaochungkuo/genomkit',
     packages=find_packages(),
-    install_requires=[
-        'Click', "numpy==1.26.4", "pysam==0.22.0"
-    ],
+    install_requires=requirements,
     # entry_points={
     #     'console_scripts': [
     #         'gpm=gpm.main:main',
