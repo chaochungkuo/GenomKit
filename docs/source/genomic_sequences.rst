@@ -5,9 +5,9 @@ Genomic Sequences
     :members:
 
 
-.. automodule:: genomkit.sequences.genomic_sequence
+.. automodule:: genomkit.sequences.gsequence
     :members:
 
 
-.. automodule:: genomkit.sequences.genomic_sequences
+.. automodule:: genomkit.sequences.gsequences
     :members:

@@ -24,7 +24,7 @@ class GSequence:
                      defaults to []
         :type data: list, optional
         """
-        self.sequence = sequence.uppercase()
+        self.sequence = sequence.upper()
         self.quality = quality
         self.name = name
         self.data = data
