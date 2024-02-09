@@ -173,8 +173,8 @@ class GRegions:
                 output.add(r)
             return output
 
-    def intersect(self, target, mode: str = "OVERLAP",
-                  rm_duplicates: bool = False):
+    def intersect_python(self, target, mode: str = "OVERLAP",
+                         rm_duplicates: bool = False):
         """Return a GRegions for the intersections between the two given
         GRegions objects. There are three modes for overlapping:
 
@@ -527,7 +527,7 @@ class GRegions:
                                 r.orientation == orientation]
         return regions
 
-    def get_array_by_seq(self, sequence: str, orientation: str):
+    def get_array_by_seq(self, sequence: str, orientation: str = None):
         regions = self.get_elements_by_seq(sequence=sequence,
                                            orientation=orientation)
         max_position = max([r.end for r in regions])
@@ -536,16 +536,45 @@ class GRegions:
             bool_array[r.start:r.end] = True
         return bool_array
 
-    # def intersect_array(self, target):
-    #     list_seq_self = self.get_sequences(unique=True)
-    #     list_seq_target = target.get_sequences(unique=True)
-    #     common_seq = [seq for seq in list_seq_self if seq in list_seq_target]
-    #     for seq in common_seq:
-    #         array_1 = self.get_array_by_seq(sequence=seq)
-    #         array_2 = target.get_array_by_seq(sequence=seq)
-    #         result_array = array_1 & array_2
-    #         true_indices = np.where(result_array)[0]
-    #         for i in true_indices:
-    #             # if 
+    def intersect_array(self, target, strandness: bool = False):
+        def find_intersects(orientation):
+            array_1 = self.get_array_by_seq(sequence=seq,
+                                            orientation=orientation)
+            array_2 = target.get_array_by_seq(sequence=seq,
+                                              orientation=orientation)
+            array_1, array_2 = make_array_same_length(array_1, array_2)
+            result_array = array_1 & array_2
+            # Find the indices where the value changes
+            indices = np.where(np.diff(result_array))[0] + 1
+            # Group consecutive indices into tuples
+            ranges = [(indices[i - 1], indices[i])
+                      for i in range(1, len(indices), 2)]
+            return ranges
 
-            
+        def make_array_same_length(array_1, array_2):
+            # Find the maximum length of the two arrays
+            max_length = max(len(array_1), len(array_2))
+            # Extend the shorter array by filling it with False values
+            if len(array_1) < max_length:
+                array_1 = np.append(array_1,
+                                    [False] * (max_length - len(array_1)))
+            elif len(array_2) < max_length:
+                array_2 = np.append(array_2,
+                                    [False] * (max_length - len(array_2)))
+            return array_1, array_2
+
+        res = GRegions(name=self.name+" & "+target.name)
+        list_seq_self = self.get_sequences(unique=True)
+        list_seq_target = target.get_sequences(unique=True)
+        common_seq = [seq for seq in list_seq_self if seq in list_seq_target]
+        for seq in common_seq:
+            if strandness:
+                # positive
+                ranges_pos = find_intersects(orientation="+")
+                ranges_neg = find_intersects(orientation="-")
+                ranges = ranges_pos + ranges_neg
+            else:
+                ranges = find_intersects(orientation=None)
+            for pair in ranges:
+                res.add(GRegion(sequence=seq, start=pair[0], end=pair[1]))
+        return res

@@ -62,27 +62,37 @@ class TestGRegions(unittest.TestCase):
         self.assertEqual(regions.get_names(unique=True),
                          ["Feature1", "Feature2", "Feature3", "Feature4"])
 
-    def test_intersect(self):
+    def test_intersect_python(self):
         regions1 = GRegions(name="test")
         regions1.load(filename=os.path.join(script_path,
                                             "test_files/bed/example.bed"))
         regions2 = GRegions(name="test")
         regions2.load(filename=os.path.join(script_path,
                                             "test_files/bed/example2.bed"))
-        intersect = regions1.intersect(regions2, mode='OVERLAP')
+        intersect = regions1.intersect_python(regions2, mode='OVERLAP')
         self.assertEqual(len(intersect), 4)
         self.assertEqual(len(intersect[0]), 500)
         self.assertEqual(len(intersect[1]), 500)
         self.assertEqual(len(intersect[2]), 500)
         self.assertEqual(len(intersect[3]), 500)
-        intersect = regions1.intersect(regions2, mode='ORIGINAL')
+        intersect = regions1.intersect_python(regions2, mode='ORIGINAL')
         self.assertEqual(len(intersect), 4)
         self.assertEqual(len(intersect[0]), 1000)
         self.assertEqual(len(intersect[1]), 1000)
         self.assertEqual(len(intersect[2]), 1000)
         self.assertEqual(len(intersect[3]), 1000)
-        intersect = regions1.intersect(regions2, mode='COMP_INCL')
+        intersect = regions1.intersect_python(regions2, mode='COMP_INCL')
         self.assertEqual(len(intersect), 0)
+
+    def test_intersect_array(self):
+        regions1 = GRegions(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example.bed"))
+        regions2 = GRegions(name="test")
+        regions2.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example2.bed"))
+        intersect = regions1.intersect_array(regions2)
+        self.assertEqual(len(intersect), 4)
 
     def test_merge(self):
         regions = GRegions(name="test")
