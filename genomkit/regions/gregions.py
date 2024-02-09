@@ -64,6 +64,16 @@ class GRegions:
         self.elements = regions.elements
         self.sorted = False
 
+    def write(self, filename: str):
+        """Write a BED file.
+
+        :param filename: Path to the BED file
+        :type filename: str
+        """
+        with open(filename, "w") as f:
+            for region in self.elements:
+                print(region.bed_entry(), file=f)
+
     def sort(self, key=None, reverse: bool = False):
         """Sort elements by criteria defined by a GenomicRegion.
 
@@ -351,8 +361,8 @@ class GRegions:
                         except StopIteration:
                             cont_loop = False
 
-            if rm_duplicates:
-                new_regions.remove_duplicates()
+            # if rm_duplicates:
+            new_regions.remove_duplicates()
             # new_regions.sort()
             return new_regions
 
@@ -563,7 +573,7 @@ class GRegions:
                                     [False] * (max_length - len(array_2)))
             return array_1, array_2
 
-        res = GRegions(name=self.name+" & "+target.name)
+        res = GRegions()
         list_seq_self = self.get_sequences(unique=True)
         list_seq_target = target.get_sequences(unique=True)
         common_seq = [seq for seq in list_seq_self if seq in list_seq_target]
@@ -576,5 +586,6 @@ class GRegions:
             else:
                 ranges = find_intersects(orientation=None)
             for pair in ranges:
-                res.add(GRegion(sequence=seq, start=pair[0], end=pair[1]))
+                res.add(GRegion(sequence=seq, start=pair[0], end=pair[1],
+                                name=""))
         return res

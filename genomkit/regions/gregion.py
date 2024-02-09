@@ -59,6 +59,15 @@ class GRegion:
                                        str(self.start), str(self.end),
                                        self.name, self.orientation)
 
+    def bed_entry(self):
+        return "\t".join([self.sequence,
+                          str(self.start),
+                          str(self.end),
+                          self.name,
+                          str(self.score),
+                          self.orientation
+                          ])
+
     def __hash__(self):
         return hash((self.sequence, self.start,
                      self.end, self.orientation))
