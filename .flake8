@@ -1,1 +1,1 @@
-exclude = .git,__pycache__,.venv,.pytest_cache,tests/*
+exclude = .git,__pycache__,.venv,.pytest_cache,tests/**/*
