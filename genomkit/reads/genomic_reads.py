@@ -23,7 +23,8 @@ class GReads:
         elif self.file_format == 'sam':
             self.bam = pysam.AlignmentFile(self.file_path, 'r')
         else:
-            raise ValueError("Unsupported file format. Supported formats: 'bam', 'sam'.")
+            raise ValueError("Unsupported file format. "
+                             "Supported formats: 'bam', 'sam'.")
 
     def load_reads(self):
         """

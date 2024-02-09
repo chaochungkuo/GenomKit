@@ -4,9 +4,9 @@ Genomic Regions
 .. automodule:: genomkit.regions
     :members:
 
-.. automodule:: genomkit.regions.genomic_region
+.. automodule:: genomkit.regions.gregion
     :members:
 
-.. automodule:: genomkit.regions.genomic_regions
+.. automodule:: genomkit.regions.gregions
     :members:
     

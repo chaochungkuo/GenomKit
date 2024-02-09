@@ -1,7 +1,7 @@
-from .regions.genomic_region import GRegion
-from .regions.genomic_regions import GRegions
-from .sequences.genomic_sequence import GSequence
-from .sequences.genomic_sequences import GSequences
+from .regions.gregion import GRegion
+from .regions.gregions import GRegions
+from .sequences.gsequence import GSequence
+from .sequences.gsequences import GSequences
 
 
 __version__ = "0.1.3"
