@@ -589,3 +589,9 @@ class GRegions:
                 res.add(GRegion(sequence=seq, start=pair[0], end=pair[1],
                                 name=""))
         return res
+
+    def overlap_count(self, target):
+        intersect = self.intersect_python(target, mode="ORIGINAL")
+        return len(intersect)
+
+    

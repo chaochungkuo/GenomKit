@@ -7,3 +7,4 @@ Genomic Alignments
 
 .. automodule:: genomkit.alignments.galignments
     :members:
+
