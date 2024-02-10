@@ -24,7 +24,7 @@ Contents
    usage
    examples
    genomic_sequences
-   genomic_reads
+   genomic_alignments
    genomic_regions
    genomic_annotation
 
