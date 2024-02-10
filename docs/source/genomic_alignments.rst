@@ -5,5 +5,5 @@ Genomic Alignments
     :members:
 
 
-.. automodule:: genomkit.alignments.genomic_alignments
+.. automodule:: genomkit.alignments.galignments
     :members:

@@ -26,4 +26,5 @@ Contents
    genomic_sequences
    genomic_reads
    genomic_regions
+   genomic_annotation
 

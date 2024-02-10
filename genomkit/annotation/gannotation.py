@@ -53,8 +53,10 @@ class GAnnotation:
                         'start': int(fields[3]),
                         'end': int(fields[4]),
                         'strand': fields[6],
-                        'gene_name': attributes.get('gene_name', ''),
-                        'gene_type': attributes.get('gene_type', '')
+                        'gene_name': attributes.get(
+                            'gene_name', '').replace('"', ''),
+                        'gene_type': attributes.get(
+                            'gene_type', '').replace('"', '')
                     }
                 elif feature_type == 'transcript':
                     transcript_id = attributes['transcript_id'].strip('"')
