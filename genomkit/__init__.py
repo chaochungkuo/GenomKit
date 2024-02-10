@@ -2,6 +2,7 @@ from .regions.gregion import GRegion
 from .regions.gregions import GRegions
 from .sequences.gsequence import GSequence
 from .sequences.gsequences import GSequences
-
+from .annotation.gannotation import GAnnotation
+from .alignments.galignments import GAlignments
 
 __version__ = "0.1.3"

@@ -1,5 +1,21 @@
+import gzip
+from tqdm import tqdm
+
+
 class GAnnotation:
-    def __init__(self, file_path, file_format):
+    """GAnnotation module
+
+    This module contains functions and classes for working with genomic
+    annotation files in the format of gtf, gtf.gz, gff, or gff.gz.
+    """
+    def __init__(self, file_path: str, file_format: str):
+        """Initiate a GAnnotation object.
+
+        :param file_path: File path to gtf, gtf.gz, gff, or gff.gz
+        :type file_path: str
+        :param file_format: File format, gtf or gff
+        :type file_format: str
+        """
         self.file_path = file_path
         self.file_format = file_format.lower()
         self.genes = {}
@@ -8,8 +24,11 @@ class GAnnotation:
         self.load_data()
 
     def load_data(self):
-        with open(self.file_path, 'r') as f:
-            for line in f:
+        """Load the file."""
+        open_func = gzip.open if self.file_path.endswith('.gz') else open
+        total_lines = sum(1 for _ in open_func(self.file_path, 'rt'))
+        with open_func(self.file_path, 'rt') as f:
+            for line in tqdm(f, total=total_lines, desc="Loading Data"):
                 if line.startswith('#'):
                     continue
                 fields = line.strip().split('\t')
@@ -66,30 +85,71 @@ class GAnnotation:
                         self.transcripts[transcript_id].setdefault(
                             'exons', set()).add(exon_id)
 
-    def get_gene(self, gene_id):
+    def get_gene(self, gene_id: str):
+        """Get the annotation of a gene by gene id.
+
+        :param gene_id: Define gene id.
+        :type gene_id: str
+        :return: annotation of a gene
+        :rtype: dict
+        """
         return self.genes.get(gene_id)
 
     def get_gene_names(self):
+        """Return all gene names in the annotation.
+
+        :return: A list of all gene names
+        :rtype: list
+        """
         gene_names = [gene_info['gene_name']
                       for gene_info in self.genes.values()
                       if gene_info.get('gene_name')]
         return gene_names
 
     def get_gene_ids(self):
+        """Return all gene ids in the annotation.
+
+        :return: A list of all gene ids
+        :rtype: list
+        """
         gene_ids = list(self.genes.keys())
         return gene_ids
 
     def get_transcript(self, transcript_id):
+        """Get the annotation of a transcript by transcript id.
+
+        :param transcript_id: Define transcript id.
+        :type transcript_id: str
+        :return: annotation of a transcript
+        :rtype: dict
+        """
         return self.transcripts.get(transcript_id)
 
     def get_exon(self, exon_id):
+        """Get the annotation of an exon by exon id.
+
+        :param exon_id: Define exon id.
+        :type exon_id: str
+        :return: annotation of an exon
+        :rtype: dict
+        """
         return self.exons.get(exon_id)
 
     def get_transcript_ids(self):
+        """Return all transcript ids in the annotation.
+
+        :return: A list of all transcript ids
+        :rtype: list
+        """
         transcript_ids = list(self.transcripts.keys())
         return transcript_ids
 
     def get_exon_ids(self):
+        """Return all exon ids in the annotation.
+
+        :return: A list of all exon ids
+        :rtype: list
+        """
         exon_ids = list(self.exons.keys())
         return exon_ids
 
