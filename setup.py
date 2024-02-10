@@ -50,6 +50,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/chaochungkuo/genomkit',
     packages=find_packages(),
+    package_data={'genomkit': ['data/*']},
     install_requires=requirements,
     # entry_points={
     #     'console_scripts': [
