@@ -184,4 +184,18 @@ class GAnnotation:
                 filtered_elements.append(element)
         return filtered_elements
 
-    # def entries2GRegions(self, entries):
+    def get_regions(self, element_type, attribute=None, value=None):
+        from genomkit import GRegion, GRegions
+        filtered_elements = self.filter_elements(
+            element_type, attribute=attribute, value=value)
+        res = GRegions()
+        for element in filtered_elements:
+            region = GRegion(sequence=element["chr"],
+                             start=element["start"],
+                             end=element["end"],
+                             orientation=element["strand"],
+                             name=element["gene_name"],
+                             data=[element["gene_type"]])
+            res.add(region)
+        return res
+
