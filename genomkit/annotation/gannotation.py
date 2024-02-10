@@ -122,5 +122,4 @@ class GAnnotation:
                 filtered_elements.append(element)
         return filtered_elements
 
-    def entries2GRegions(self, entries):
-        
+    # def entries2GRegions(self, entries):
