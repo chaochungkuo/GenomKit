@@ -1,9 +1,9 @@
 import pysam
 
 
-class GReads:
+class GAlignments:
     def __init__(self, file_path, file_format):
-        """Initialize GReads object.
+        """Initialize GAlignments object.
 
         Parameters:
             file_path (str): Path to the BAM/SAM file.
