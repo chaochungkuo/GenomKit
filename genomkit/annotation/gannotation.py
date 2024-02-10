@@ -184,7 +184,22 @@ class GAnnotation:
                 filtered_elements.append(element)
         return filtered_elements
 
-    def get_regions(self, element_type, attribute=None, value=None):
+    def get_regions(self, element_type: str,
+                    attribute: str = None,
+                    value=None):
+        """Return GRegions according to the filtering method.
+
+        :param element_type: gene, transcript, or exon
+        :type element_type: str
+        :param attribute: Attribute for filtering such as 'chr', 'start',
+                          'end', 'strand', 'gene_name', 'gene_type',
+                          defaults to None
+        :type attribute: str, optional
+        :param value: Value of the attribute, defaults to None
+        :type value: str or int, optional
+        :return: GRegions
+        :rtype: GRegions
+        """
         from genomkit import GRegion, GRegions
         filtered_elements = self.filter_elements(
             element_type, attribute=attribute, value=value)
@@ -198,4 +213,3 @@ class GAnnotation:
                              data=[element["gene_type"]])
             res.add(region)
         return res
-
