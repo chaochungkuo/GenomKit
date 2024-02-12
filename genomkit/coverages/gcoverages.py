@@ -87,3 +87,24 @@ class GCoverage:
                 coverage = self.coverage[region.sequence][start:end]
                 filtered_coverages[region] = coverage
         return filtered_coverages
+
+    def total_sequencing_depth(self):
+        """Calculate the total sequencing depth.
+
+        :return: Total sequencing depth.
+        :rtype: int
+        """
+        total_depth = 0
+        for chrom, cov in self.coverage.items():
+            total_depth += sum(cov)
+        return total_depth
+
+    def scale_coverage(self, coefficient):
+        """Scale the coverages by a coefficient.
+
+        :param coefficient: Coefficient to scale the coverages.
+        :type coefficient: float
+        """
+        for chrom in self.coverage:
+            self.coverage[chrom] = [val * coefficient
+                                    for val in self.coverage[chrom]]
