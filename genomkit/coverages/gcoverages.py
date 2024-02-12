@@ -4,6 +4,13 @@ import pysam
 
 
 class GCoverage:
+    """
+    GCoverage module
+
+    This module contains functions and classes for working with a collection of
+    genomic coverages. It provides utilities for handling and analyzing the
+    interactions of many genomic coverages.
+    """
     def __init__(self, bin_size: int = 1):
         """Initialize GCoverage object.
 

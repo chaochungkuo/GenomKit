@@ -2,6 +2,13 @@ import pysam
 
 
 class GAlignments:
+    """
+    GAlignments module
+
+    This module contains functions and classes for working with a collection of
+    genomic alignments. It provides utilities for handling and analyzing the
+    interactions of many genomic alignments.
+    """
     def __init__(self, file_path, file_format):
         """Initialize GAlignments object.
 
