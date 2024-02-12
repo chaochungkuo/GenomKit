@@ -4,5 +4,6 @@ from .sequences.gsequence import GSequence
 from .sequences.gsequences import GSequences
 from .annotation.gannotation import GAnnotation
 from .alignments.galignments import GAlignments
+from .coverages.gcoverages imort GCoverage
 
 __version__ = "0.1.3"
