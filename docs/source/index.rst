@@ -27,4 +27,5 @@ Contents
    genomic_alignments
    genomic_regions
    genomic_annotation
+   genomic_coverage
 
