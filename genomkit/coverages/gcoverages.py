@@ -21,13 +21,13 @@ class GCoverage:
         self.coverage = {}
         self.bin_size = bin_size
 
-    def load_coverage_from_bigwig(self, file_path: str):
+    def load_coverage_from_bigwig(self, filename: str):
         """Load coverage data from a bigwig file.
 
-        :param file_path: Path to the bigwig file.
-        :type file_path: str
+        :param filename: Path to the bigwig file.
+        :type filename: str
         """
-        bw = pyBigWig.open(file_path)
+        bw = pyBigWig.open(filename)
         chromosomes = bw.chroms()
         for chrom, chrom_length in chromosomes.items():
             coverage = bw.values(chrom, 0, chrom_length, numpy=True)
@@ -37,13 +37,13 @@ class GCoverage:
             self.coverage[chrom] = coverage
         bw.close()
 
-    def calculate_coverage_from_bam(self, file_path: str):
+    def calculate_coverage_from_bam(self, filename: str):
         """Calculate coverage from a BAM file.
 
-        :param file_path: Path to the BAM file.
-        :type file_path: str
+        :param filename: Path to the BAM file.
+        :type filename: str
         """
-        bam = pysam.AlignmentFile(file_path, "rb")
+        bam = pysam.AlignmentFile(filename, "rb")
         for pileupcolumn in bam.pileup():
             chrom = bam.get_reference_name(pileupcolumn.reference_id)
             if chrom not in self.coverage:
@@ -60,15 +60,16 @@ class GCoverage:
                                         len(self.coverage[chrom]),
                                         self.bin_size)]
 
-    def get_coverage(self, chromosome: str):
-        """Get coverage data for a specific chromosome.
+    def get_coverage(self, seq_name: str):
+        """Get coverage data for a specific sequence by name. This sequence
+        can be a chromosome or a genomic region.
 
-        :param chromosome: Chromosome name.
-        :type chromosome: str
-        :return: Coverage data for the specified chromosome.
+        :param seq_name: sequence name.
+        :type seq_name: str
+        :return: Coverage data for the specified sequence.
         :rtype: numpy array
         """
-        return self.coverage.get(chromosome, [])
+        return self.coverage.get(seq_name, [])
 
     def filter_regions_coverage(self, regions):
         """Filter regions for their coverages.
@@ -92,11 +93,11 @@ class GCoverage:
         """Calculate the total sequencing depth.
 
         :return: Total sequencing depth.
-        :rtype: int
+        :rtype: float
         """
         total_depth = 0
         for chrom, cov in self.coverage.items():
-            total_depth += sum(cov)
+            total_depth += np.nansum(cov)
         return total_depth
 
     def scale_coverage(self, coefficient):
@@ -106,5 +107,7 @@ class GCoverage:
         :type coefficient: float
         """
         for chrom in self.coverage:
-            self.coverage[chrom] = [val * coefficient
-                                    for val in self.coverage[chrom]]
+            # Replace NaN values with 0 before scaling
+            self.coverage[chrom][np.isnan(self.coverage[chrom])] = 0
+            # Scale the non-NaN values
+            self.coverage[chrom] = self.coverage[chrom] * coefficient
