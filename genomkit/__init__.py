@@ -6,4 +6,4 @@ from .annotation.gannotation import GAnnotation
 from .alignments.galignments import GAlignments
 from .coverages.gcoverages import GCoverage
 
-__version__ = "0.2.3"
+__version__ = "0.2.4"
