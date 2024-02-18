@@ -32,10 +32,13 @@ current_version = find_version("genomkit", "__init__.py")
 # Setup function
 #############################################################
 # Read the requirements from requirements.txt
-with open('requirements.txt') as f:
+requirements_file = os.path.join(os.path.dirname(__file__),
+                                 'requirements.txt')
+with open(requirements_file) as f:
     requirements = f.read().splitlines()
-
-with open("README.md", "r") as fh:
+readme_file = os.path.join(os.path.dirname(__file__),
+                           'README.md')
+with open(readme_file, "r") as fh:
     long_description = fh.read()
 
 short_description = 'genomkit'
