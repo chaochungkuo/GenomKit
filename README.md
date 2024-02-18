@@ -27,7 +27,7 @@ GenomKit is a comprehensive Python package designed to streamline bioinformatics
 To install GenomKit, simply use pip:
 
 ```shell
-pip install GenomKit
+pip install genomkit
 ```
 
 For more detailed installation instructions, including installation from source, refer to the documentation.
