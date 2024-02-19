@@ -6,7 +6,6 @@ Examples
 
 Extract exon, intron, and intergenetic regions in BED format from a GTF file
 ----------------------------------------------------------------------------
-
 ``GTF`` ``BED``
 
 .. _extract-promoters:
