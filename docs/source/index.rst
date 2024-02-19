@@ -28,4 +28,5 @@ Contents
    genomic_regions
    genomic_annotation
    genomic_coverage
+   genomic_variants
 
