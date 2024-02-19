@@ -1,5 +1,6 @@
+====================================
 Welcome to Genomkit's documentation!
-===================================
+====================================
 
 .. note::
 
@@ -23,10 +24,5 @@ Contents
    concept
    usage
    examples
-   genomic_sequences
-   genomic_alignments
-   genomic_regions
-   genomic_annotation
-   genomic_coverage
-   genomic_variants
+   api
 
