@@ -1,5 +1,6 @@
 from .io import load_FASTA, load_FASTA_from_file, \
-                load_FASTQ, load_FASTQ_from_file
+                load_FASTQ, load_FASTQ_from_file, \
+                write_FASTA, write_FASTQ
 import gzip
 
 
@@ -128,13 +129,10 @@ class GSequences:
             if seq.name == name:
                 return seq.slice_sequence(start, end)
 
-    def write_fasta(self, filename: str, data: bool = False):
-        with open(filename, "w") as fasta_file:
-            for seq in self.elements:
-                if data:
-                    fasta_file.write(">" + seq.name + " " +
-                                     " ".join(seq.data) + "\n")
-                else:
-                    fasta_file.write(f">{seq.name}\n")
-                for i in range(0, len(seq.sequence), 80):
-                    fasta_file.write(f"{seq.sequence[i:i+80]}\n")
+    def write_FASTA(self, filename: str, data: bool = False,
+                    gz: bool = True):
+        write_FASTA(seqs=self, filename=filename, data=data, gz=gz)
+
+    def write_FASTQ(self, filename: str, data: bool = False,
+                    gz: bool = True):
+        write_FASTQ(seqs=self, filename=filename, data=data, gz=gz)
