@@ -4,9 +4,9 @@ Examples
 
 .. _extract-exon-intron:
 
-Extract exon, intron, and intergenetic regions in BED format from a GTF file
+Extract exon, intron, and intergenetic regions in BED format from a GTF file ``GTF`` ``BED``
 ----------------------------------------------------------------------------
-``GTF`` ``BED``
+
 
 .. _extract-promoters:
 
