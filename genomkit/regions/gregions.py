@@ -3,6 +3,7 @@ from genomkit import GRegion
 import copy
 import numpy as np
 from .io import load_BED
+import os
 
 
 ###########################################################################
@@ -182,6 +183,25 @@ class GRegions:
                                        inplace=False)
                 output.add(r)
             return output
+
+    def load_chrom_size_file(self, file_path):
+        with open(file_path, 'r') as file:
+            for line in file:
+                parts = line.strip().split('\t')
+                self.add(GRegion(sequence=parts[0], start=0,
+                                 end=int(parts[1])))
+
+    def get_chromosomes(self, organism: str):
+        import pkg_resources
+        chrome_size_file = 'data/chrom_size/chrom.sizes.' + organism
+        file_path = pkg_resources.resource_filename('genomkit',
+                                                    chrome_size_file)
+        if os.path.exists(file_path):
+            self.load_chrom_size_file(file_path)
+        elif os.path.exists(organism):
+            self.load_chrom_size_file(file_path)
+        else:
+            print(organism + " chromosome size file does not exist")
 
     def intersect_python(self, target, mode: str = "OVERLAP",
                          rm_duplicates: bool = False):

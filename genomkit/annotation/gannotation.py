@@ -49,6 +49,7 @@ class GAnnotation:
                 if feature_type == 'gene':
                     gene_id = attributes['gene_id'].strip('"')
                     self.genes[gene_id] = {
+                        'id': gene_id,
                         'chr': fields[0],
                         'start': int(fields[3]),
                         'end': int(fields[4]),
@@ -62,6 +63,7 @@ class GAnnotation:
                     transcript_id = attributes['transcript_id'].strip('"')
                     gene_id = attributes['gene_id'].strip('"')
                     self.transcripts[transcript_id] = {
+                        'id': transcript_id,
                         'gene_id': gene_id,
                         'chr': fields[0],
                         'start': int(fields[3]),
@@ -77,6 +79,7 @@ class GAnnotation:
                     exon_id = attributes['exon_id'].strip('"')
                     transcript_id = attributes['transcript_id'].strip('"')
                     self.exons[exon_id] = {
+                        'id': exon_id,
                         'transcript_id': transcript_id,
                         'chr': fields[0],
                         'start': int(fields[3]),
@@ -166,7 +169,6 @@ class GAnnotation:
         :param value: Value of the attribute to filter on.
         :return: List of filtered elements.
         """
-        filtered_elements = []
         if element_type == 'gene':
             elements = self.genes.values()
         elif element_type == 'transcript':
@@ -176,6 +178,7 @@ class GAnnotation:
         else:
             raise ValueError("Invalid element type. Supported types are"
                              "'gene', 'transcript', 'exon'.")
+        filtered_elements = []
         for element in elements:
             if attribute and value:
                 if attribute in element and element[attribute] == value:
@@ -205,11 +208,16 @@ class GAnnotation:
             element_type, attribute=attribute, value=value)
         res = GRegions()
         for element in filtered_elements:
+            extra_data = [":".join([attribute,
+                                    ",".join(list(element[attribute]))])
+                          for attribute in element.keys()
+                          if attribute not in ["id", "chr", "start", "end",
+                                               "strand"]]
             region = GRegion(sequence=element["chr"],
                              start=element["start"],
                              end=element["end"],
                              orientation=element["strand"],
-                             name=element["gene_name"],
-                             data=[element["gene_type"]])
+                             name=element["id"],
+                             data=extra_data)
             res.add(region)
         return res
