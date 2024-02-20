@@ -137,6 +137,29 @@ class TestGRegions(unittest.TestCase):
         sampling = regions.sampling(size=3)
         self.assertEqual(len(sampling), 3)
 
+    def test_subtract(self):
+        regions1 = GRegions(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example.bed"))
+        regions2 = GRegions(name="test")
+        regions2.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example2.bed"))
+        regions1.subtract(regions2)
+        self.assertEqual(len(regions1), 4)
+        self.assertEqual(len(regions1[0]), 500)
+        self.assertEqual(len(regions1[1]), 500)
+        self.assertEqual(len(regions1[2]), 500)
+        self.assertEqual(len(regions1[3]), 500)
+
+        # regions1 = GRegions(name="test")
+        # regions1.load(filename=os.path.join(script_path,
+        #                                     "test_files/bed/example.bed"))
+        # regions2 = GRegions(name="test")
+        # regions2.load(filename=os.path.join(script_path,
+        #                                     "test_files/bed/example2.bed"))
+        # regions1.subtract(regions2, whole_region=True)
+        # self.assertEqual(len(regions1[0]), 0)
+
 
 if __name__ == '__main__':
     unittest.main()

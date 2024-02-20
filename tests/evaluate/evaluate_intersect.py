@@ -7,30 +7,40 @@ import memory_profiler
 
 script_path = os.path.dirname(__file__)
 
+# genes_bed_file = os.path.join(script_path,
+#                               "../test_files/bed/example.bed")
+# peaks_bed_file = os.path.join(script_path,
+#                               "../test_files/bed/example2.bed")
 genes_bed_file = os.path.join(script_path,
                               "../test_files/bed/genes_Gencode_mm10.bed")
 peaks_bed_file = os.path.join(script_path,
                               "../test_files/bed/consensus_peaks.bed")
 genes = GRegions(name="genes", load=genes_bed_file)
-print(len(genes))
+# print(len(genes))
 peaks = GRegions(name="genes", load=peaks_bed_file)
-print(len(peaks))
+# print(len(peaks))
 
 
-@profile # noqa
+@profile
 def time_intersect_python():
     intersect = peaks.intersect_python(genes)
 
 
-@profile # noqa
+@profile
 def time_intersect_array():
     intersect = peaks.intersect_array(genes)
 
+@profile
+def time_intersect_posi():
+    intersect = peaks.intersect_posi(genes)
 
-execution_time = timeit.timeit(time_intersect_python, number=10)
-print("[Python intersect] Execution time:", execution_time, "seconds")
-execution_time = timeit.timeit(time_intersect_array, number=10)
-print("[Array intersect] Execution time:", execution_time, "seconds")
+repeat_num = 2
+execution_time = timeit.timeit(time_intersect_python, number=repeat_num)
+print('[{:<20}]'.format('intersect_python'), '{:<5.2f}'.format(execution_time), "seconds")
+execution_time = timeit.timeit(time_intersect_array, number=repeat_num)
+print('[{:<20}]'.format('intersect_array'), '{:<5.2f}'.format(execution_time), "seconds")
+execution_time = timeit.timeit(time_intersect_posi, number=repeat_num)
+print('[{:<20}]'.format('intersect_posi'), '{:<5.2f}'.format(execution_time), "seconds")
 # print(len(intersect))
 # intersect.write("intersect_python.bed")
 # print(len(intersect))
