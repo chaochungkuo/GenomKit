@@ -9,4 +9,6 @@ Genomic Regions
 
 .. automodule:: genomkit.regions.gregions
     :members:
-    
+
+.. automodule:: genomkit.regions.gregions_set
+    :members:
