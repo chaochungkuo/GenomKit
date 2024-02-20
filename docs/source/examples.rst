@@ -5,8 +5,6 @@ Examples
 Extract exon, intron, and intergenetic regions in BED format from a GTF file
 ----------------------------------------------------------------------------
 
-``GTF`` ``BED``
-
 ``GTF_hg38`` is the path to the hg38 GTF file for annotation. Now you want to generate 3 BED files as below:
 
 - hg38_exons.bed
@@ -34,9 +32,27 @@ Extract exon, intron, and intergenetic regions in BED format from a GTF file
 Get all promoter regions in BED format from a GTF file
 ------------------------------------------------------
 
-``GTF`` ``BED``
+``GTF_hg38`` is the path to the hg38 GTF file for annotation. Now you want to generate 3 BED files as below:
 
+.. code-block:: python
+
+    from genomkit import GAnnotation
+
+    gtf = GAnnotation(file_path=GTF_hg38, file_format="gtf")
+    genes = gtf.get_regions(element_type="gene")
+    promoters = genes.resize(extend_upstream=2000,
+                            extend_downstream=0,
+                            center="5prime", inplace=False)
+    promoters.write(filename="hg38_promoters.bed")
 
 Extract the genes by their biotypes from a GTF file
 ---------------------------------------------------
 
+``GTF_hg38`` is the path to the hg38 GTF file for annotation. Now you want to generate BED files for the biotypes below:
+
+- protein_coding
+- lncRNA
+- snRNA
+- miRNA
+
+.. code-block:: python

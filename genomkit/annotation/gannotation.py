@@ -208,16 +208,23 @@ class GAnnotation:
             element_type, attribute=attribute, value=value)
         res = GRegions()
         for element in filtered_elements:
-            extra_data = [":".join([attribute,
-                                    ",".join(list(element[attribute]))])
+            extra_data = [":".join([attribute, element[attribute]])
                           for attribute in element.keys()
                           if attribute not in ["id", "chr", "start", "end",
-                                               "strand"]]
+                                               "strand", "transcripts"]]
+            if "transcripts" in element.keys():
+                transcripts = "transcripts:" + ",".join(element["transcripts"])
+                extra_data += [transcripts]
+            if "gene_name" in element.keys():
+                name = element["gene_name"]
+                extra_data = ["gene_id:"+element["id"]] + extra_data
+            else:
+                name = element["id"]
             region = GRegion(sequence=element["chr"],
                              start=element["start"],
                              end=element["end"],
                              orientation=element["strand"],
-                             name=element["id"],
+                             name=name,
                              data=extra_data)
             res.add(region)
         return res

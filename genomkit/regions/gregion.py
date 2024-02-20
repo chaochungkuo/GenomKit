@@ -59,14 +59,31 @@ class GRegion:
                                        str(self.start), str(self.end),
                                        self.name, self.orientation)
 
-    def bed_entry(self):
-        return "\t".join([self.sequence,
-                          str(self.start),
-                          str(self.end),
-                          self.name,
-                          str(self.score),
-                          self.orientation
-                          ])
+    def bed_entry(self, data: bool = False):
+        """Export regions in BED format
+
+        :param data: Define whether to export extra data, defaults to False
+        :type data: bool, optional
+        :return: A string in BED format
+        :rtype: str
+        """
+        if data:
+            return "\t".join([self.sequence,
+                              str(self.start),
+                              str(self.end),
+                              self.name,
+                              str(self.score),
+                              self.orientation,
+                              "\t".join(self.data)
+                              ])
+        else:
+            return "\t".join([self.sequence,
+                              str(self.start),
+                              str(self.end),
+                              self.name,
+                              str(self.score),
+                              self.orientation
+                              ])
 
     def __hash__(self):
         return hash((self.sequence, self.start,
@@ -202,3 +219,49 @@ class GRegion:
                 return self.start - region.end
         else:
             return None
+
+    def resize(self, extend_upstream: int, extend_downstream: int,
+               center="mid_point"):
+        """Return a resized GRegion according to the defined center and
+        extension.
+
+        :param extend_upstream: Define extension length toward upstream
+        :type extend_upstream: int
+        :param extend_downstream: Define extension length toward downstream
+        :type extend_downstream: int
+        :param center: Define the new center, defaults to "mid_point", other
+                       options are "5prime" and "3prime"
+        :type center: str, optional
+        :return: A resized GRegion
+        :rtype: GRegion
+        """
+        if center == "mid_point":
+            center = int(0.5*(self.end-self.start))
+            if self.orientation == "-":
+                start = center+extend_upstream
+                end = center-extend_downstream
+            else:
+                start = center-extend_upstream
+                end = center+extend_downstream
+        elif center == "5prime":
+            if self.orientation == "-":
+                center = self.end
+                start = center+extend_upstream
+                end = center-extend_downstream
+            else:
+                center = self.start
+                start = center-extend_upstream
+                end = center+extend_downstream
+        elif center == "3prime":
+            if self.orientation == "-":
+                center = self.start
+                start = center+extend_upstream
+                end = center-extend_downstream
+            else:
+                center = self.end
+                start = center-extend_upstream
+                end = center+extend_downstream
+        res = GRegion(sequence=self.sequence, start=start, end=end,
+                      orientation=self.orientation, score=self.score,
+                      name=self.name, data=self.data)
+        return res

@@ -65,15 +65,17 @@ class GRegions:
         self.elements = regions.elements
         self.sorted = False
 
-    def write(self, filename: str):
+    def write(self, filename: str, data: bool = False):
         """Write a BED file.
 
         :param filename: Path to the BED file
         :type filename: str
+        :param data: Export extra data or not, defaults to False
+        :type data: bool
         """
         with open(filename, "w") as f:
             for region in self.elements:
-                print(region.bed_entry(), file=f)
+                print(region.bed_entry(data=data), file=f)
 
     def sort(self, key=None, reverse: bool = False):
         """Sort elements by criteria defined by a GenomicRegion.
@@ -164,7 +166,7 @@ class GRegions:
         :param strandness: Define whether strandness is considered.
         :type strandness: bool
         :param inplace: Define whether this operation will be applied on the
-                        same object (True) or return a new object..
+                        same object (True) or return a new object.
         :type inplace: bool
         :return: None
         """
@@ -202,6 +204,35 @@ class GRegions:
             self.load_chrom_size_file(file_path)
         else:
             print(organism + " chromosome size file does not exist")
+
+    def resize(self, extend_upstream: int, extend_downstream: int,
+               center="mid_point", inplace=True):
+        """Resize the regions according to the defined center and
+        extension.
+
+        :param extend_upstream: Define extension length toward upstream
+        :type extend_upstream: int
+        :param extend_downstream: Define extension length toward downstream
+        :type extend_downstream: int
+        :param center: Define the new center, defaults to "mid_point", other
+                       options are "5prime" and "3prime"
+        :type center: str, optional
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object.
+        :type inplace: bool
+        :return: A resized GRegion
+        :rtype: GRegion
+        """
+        res = GRegions(name=self.name+"_resize")
+        for region in self.elements:
+            res.add(region.resize(extend_upstream=extend_upstream,
+                                  extend_downstream=extend_downstream,
+                                  center=center))
+        if inplace:
+            self.elements = res.elements
+            self.sorted = False
+        else:
+            return res
 
     def intersect_python(self, target, mode: str = "OVERLAP",
                          rm_duplicates: bool = False):
@@ -405,7 +436,7 @@ class GRegions:
                            strandness.
         :type strandness: bool
         :param inplace: Define whether this operation will be applied on the
-                        same object (True) or return a new object..
+                        same object (True) or return a new object.
         :type inplace: bool
         :return: None or a GRegions.
         :rtype: GRegions
