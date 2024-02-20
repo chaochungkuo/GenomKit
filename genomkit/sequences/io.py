@@ -64,45 +64,49 @@ def load_FASTQ_from_file(file):
     current_sequence_id = None
     current_sequence = ""
     current_quality = ""
-    for line in file:
-        line = line.strip()
-        if line.startswith("#"):
-            continue
-        elif line.startswith("@"):  # FASTQ header line
-            # If there was a previously stored sequence, store it
-            if current_sequence_id is not None:
-                if len(current_sequence) != len(current_quality):
-                    raise ValueError("Invalid FASTQ file: Sequence and "
-                                     "quality lines do not match.")
-                elif len(current_quality) == len(current_sequence):
-                    infos = current_sequence_id.split()
-                    name = infos[0]
-                    data = infos[1:]
-                    res.add(GSequence(sequence=current_sequence,
-                                      quality=current_quality,
-                                      name=name, data=data))
-            # Extract the sequence ID
-            current_sequence_id = line[1:]
-            # Start new sequence and quality strings
-            current_sequence = ""
-            current_quality = ""
-        elif current_sequence_id and not current_sequence:
-            current_sequence = line
-        elif line.startswith("+"):  # FASTQ quality header line
-            continue
-        elif current_sequence_id and current_sequence and \
-                not current_quality:
-            current_quality = line
-    # Store the last sequence
-    if current_sequence_id is not None:
-        if len(current_sequence) != len(current_quality):
-            raise ValueError("Invalid FASTQ file: Sequence and quality "
-                             "lines do not match.")
-        elif len(current_quality) == len(current_sequence):
-            infos = current_sequence_id.split()
-            name = infos[0]
-            data = infos[1:]
-            res.add(GSequence(sequence=current_sequence,
-                              quality=current_quality,
-                              name=name, data=data))
+    total_lines = sum(1 for line in file if not line.startswith("#"))
+    file.seek(0)  # Reset file pointer to the beginning
+    with tqdm(total=total_lines) as pbar:
+        for line in file:
+            line = line.strip()
+            if line.startswith("#"):
+                continue
+            elif line.startswith("@"):  # FASTQ header line
+                # If there was a previously stored sequence, store it
+                if current_sequence_id is not None:
+                    if len(current_sequence) != len(current_quality):
+                        raise ValueError("Invalid FASTQ file: Sequence and "
+                                         "quality lines do not match.")
+                    elif len(current_quality) == len(current_sequence):
+                        infos = current_sequence_id.split()
+                        name = infos[0]
+                        data = infos[1:]
+                        res.add(GSequence(sequence=current_sequence,
+                                          quality=current_quality,
+                                          name=name, data=data))
+                # Extract the sequence ID
+                current_sequence_id = line[1:]
+                # Start new sequence and quality strings
+                current_sequence = ""
+                current_quality = ""
+            elif current_sequence_id and not current_sequence:
+                current_sequence = line
+            elif line.startswith("+"):  # FASTQ quality header line
+                continue
+            elif current_sequence_id and current_sequence and \
+                    not current_quality:
+                current_quality = line
+            pbar.update(1)
+        # Store the last sequence
+        if current_sequence_id is not None:
+            if len(current_sequence) != len(current_quality):
+                raise ValueError("Invalid FASTQ file: Sequence and quality "
+                                 "lines do not match.")
+            elif len(current_quality) == len(current_sequence):
+                infos = current_sequence_id.split()
+                name = infos[0]
+                data = infos[1:]
+                res.add(GSequence(sequence=current_sequence,
+                                  quality=current_quality,
+                                  name=name, data=data))
     return res
