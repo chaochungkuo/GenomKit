@@ -1,3 +1,6 @@
+from tqdm import tqdm
+
+
 ###########################################################################
 # IO functions
 ###########################################################################
@@ -14,32 +17,36 @@ def load_FASTA_from_file(file):
     res = GSequences()
     current_sequence_id = None
     current_sequence = ""
-    for line in file:
-        line = line.strip()
-        if line.startswith("#"):
-            continue
-        elif line.startswith(">"):
-            # If there was a previously stored sequence, store it
-            if current_sequence_id is not None:
-                infos = current_sequence_id.split()
-                name = infos[0]
-                data = infos[1:]
-                res.add(GSequence(sequence=current_sequence,
-                                  name=name, data=data))
-            # Extract the sequence ID
-            current_sequence_id = line[1:]
-            # Start a new sequence
-            current_sequence = ""
-        else:  # Sequence line
-            # Append the sequence line to the current sequence
-            current_sequence += line
-    # Store the last sequence
-    if current_sequence_id is not None:
-        infos = current_sequence_id.split()
-        name = infos[0]
-        data = infos[1:]
-        res.add(GSequence(sequence=current_sequence,
-                          name=name, data=data))
+    total_lines = sum(1 for line in file if not line.startswith("#"))
+    file.seek(0)  # Reset file pointer to the beginning
+    with tqdm(total=total_lines) as pbar:
+        for line in file:
+            line = line.strip()
+            if line.startswith("#"):
+                continue
+            elif line.startswith(">"):
+                # If there was a previously stored sequence, store it
+                if current_sequence_id is not None:
+                    infos = current_sequence_id.split()
+                    name = infos[0]
+                    data = infos[1:]
+                    res.add(GSequence(sequence=current_sequence,
+                                      name=name, data=data))
+                # Extract the sequence ID
+                current_sequence_id = line[1:]
+                # Start a new sequence
+                current_sequence = ""
+            else:  # Sequence line
+                # Append the sequence line to the current sequence
+                current_sequence += line
+            pbar.update(1)
+        # Store the last sequence
+        if current_sequence_id is not None:
+            infos = current_sequence_id.split()
+            name = infos[0]
+            data = infos[1:]
+            res.add(GSequence(sequence=current_sequence,
+                              name=name, data=data))
     return res
 
 

@@ -4,6 +4,7 @@ import copy
 import numpy as np
 from .io import load_BED
 import os
+import sys
 
 
 ###########################################################################
@@ -691,100 +692,104 @@ class GRegions:
                 finished = 0
                 last_region = self.elements[-1]
 
-                for region in self.elements:
+                for r in self.elements:
                     if not finished:
-                        if region != last_region:
+                        if r != last_region:
                             # handling of duplicates within self
-                            if region.sequence == regions.elements[counts].sequence:
-                                if region.start == regions.elements[counts].start:
-                                    if region.end == regions.elements[counts].end:
+                            if r.sequence == regions.elements[counts].sequence:
+                                if r.start == regions.elements[counts].start:
+                                    if r.end == regions.elements[counts].end:
                                         # cur y  |-----|
                                         # region |-----|
                                         counts = counts + 1
                                         if counts == len(regions.elements):
                                             finished = 1
 
-                                    elif region.end < regions.elements[counts].end:
+                                    elif r.end < regions.elements[counts].end:
                                         # cur y    |------|
                                         # region   |---|
-                                        small_self.add(region)
+                                        small_self.add(r)
                                     else:
                                         # cur y   |----|
                                         # region  |------|
                                         loop = 1
-                                        while regions.elements[counts].end < region.end and loop:
+                                        while regions.elements[counts].end < r.end and loop:
                                             if counts < len(regions.elements) - 1:
                                                 counts = counts + 1
-                                                if regions.elements[counts].sequence > region.sequence:
-                                                    small_self.add(region)
+                                                if regions.elements[counts].sequence > r.sequence:
+                                                    small_self.add(r)
                                                     loop = 0
                                                 else:
                                                     # still the same chromosome as current region from self
-                                                    if regions.elements[counts].end == region.end:
+                                                    if regions.elements[counts].end == r.end:
                                                         # cur y  |-----|
                                                         # region |-----|
                                                         counts = counts + 1
                                                         if counts == len(regions.elements):
                                                             loop = 0
                                                             finished = 1
-                                                    elif regions.elements[counts].end > region.end:
+                                                    elif regions.elements[counts].end > r.end:
                                                         # cur y   |----|
                                                         # region  |---|
-                                                        small_self.add(region)
+                                                        small_self.add(r)
                                             else:
                                                 # reached the last region in y and this is not exactly mapping
-                                                small_self.add(region)
+                                                small_self.add(r)
                                                 loop = 0
-                                elif region.start < regions.elements[counts].start:
+                                elif r.start < regions.elements[counts].start:
                                     # cur y       |---| |        |----| |     |---|     |    |---|
                                     # region    |---|   |  |---|        |   |-----|     |   |------|
-                                    small_self.add(region)
+                                    small_self.add(r)
 
                                 else:
                                     # cur y     |---|        |  |---|      | |-----| |   |----|
                                     # region          |---|  |     |---|   |   |--|  |     |--|
                                     loop = 1
-                                    while regions.elements[counts].start < region.start and loop:
+                                    while regions.elements[counts].start < r.start and loop:
                                         if counts < len(regions.elements) - 1:
                                             counts = counts + 1
-                                            if regions.elements[counts].sequence > region.sequence:
-                                                small_self.add(region)
+                                            if regions.elements[counts].sequence > r.sequence:
+                                                small_self.add(r)
                                                 loop = 0
                                             else:
-                                                if regions.elements[counts].end == region.end:
+                                                if regions.elements[counts].end == r.end:
                                                     # cur y    |-----|
                                                     # region   |-----|
                                                     counts = counts + 1
                                                     if counts == len(regions.elements):
                                                         loop = 0
                                                         finished = 1
-                                                elif regions.elements[counts].start > region.start:
+                                                elif regions.elements[counts].start > r.start:
                                                     # cur y      |---| |        |----| |     |---|     |    |---|
                                                     # region   |---|   |  |---|        |   |-----|     |   |------|
-                                                    small_self.add(region)
+                                                    small_self.add(r)
                                         else:
                                             # reached the last region in y and this is not exactly mapping
-                                            small_self.add(region)
+                                            small_self.add(r)
                                             loop = 0
                                             finished = 1
 
-                            elif region.sequence > regions.elements[counts].sequence:
+                            elif r.sequence > regions.elements[counts].sequence:
                                 counts = counts + 1
                                 if counts == len(regions.elements):
                                     finished = 1
                             else:
-                                # region.sequence < target.sequences[counts].sequence:
-                                small_self.add(region)
+                                # region.sequence < 
+                                # target.sequences[counts].sequence:
+                                small_self.add(r)
                     else:
-                        # finished -> reached end of y, simply add all remaining regions of self that are not equal
-                        # to the last subtracted or a region that has already been added
-                        if region != last_region:
-                            small_self.add(region)
-                    last_region = region
+                        # finished -> reached end of y, simply add all
+                        # remaining regions of self that are not equal
+                        # to the last subtracted or a region that has
+                        # already been added
+                        if r != last_region:
+                            small_self.add(r)
+                    last_region = r
                 return small_self
 
             elif len(self.elements) == 1:
-                # GRS only contains 1 region, only check if this matches exactly with any region within y
+                # GRS only contains 1 region, only check if this matches
+                # exactly with any region within y
                 for target_region in regions.elements:
                     if target_region == self.elements[0]:
                         return GRegions("small_self")  # return empty GRS
@@ -846,29 +851,35 @@ class GRegions:
                                          name=s.name, orientation=s.orientation, data=s.data)
                             res.add(s1)
                             s = s2
-                            if j < last_j: j = j + 1
+                            if j < last_j:
+                                j = j + 1
                             cont_overlap = True
                             continue
                         else:
-                            s1 = GRegion(sequence=s.sequence, start=s.start, end=b[j].start,
-                                         name=s.name, orientation=s.orientation, data=s.data)
+                            s1 = GRegion(sequence=s.sequence, start=s.start,
+                                         end=b[j].start, name=s.name,
+                                         orientation=s.orientation,
+                                         data=s.data)
                             res.add(s1)
                             try:
                                 s = next(iter_a)
                                 j = pre_inter
                                 cont_overlap = False
                                 continue
-                            except:
+                            except StopIteration:
                                 cont_loop = False
 
                     elif s.end > b[j].end:
 
                         #     ------
                         # ------
-                        s2 = GRegion(sequence=s.sequence, start=b[j].end, end=s.end,
-                                     name=s.name, orientation=s.orientation, data=s.data)
+                        s2 = GRegion(sequence=s.sequence, start=b[j].end,
+                                     end=s.end, name=s.name,
+                                     orientation=s.orientation,
+                                     data=s.data)
                         s = s2
-                        if j < last_j: j = j + 1
+                        if j < last_j:
+                            j = j + 1
                         cont_overlap = True
                         continue
                     else:
@@ -878,14 +889,14 @@ class GRegions:
                         try:
                             s = next(iter_a)
                             j = pre_inter
-                        except:
+                        except StopIteration:
                             cont_loop = False
 
                     if j == last_j:
                         try:
                             s = next(iter_a)
                             j = pre_inter
-                        except:
+                        except StopIteration:
                             cont_loop = False
                     else:
                         j = j + 1
@@ -897,7 +908,7 @@ class GRegions:
                         s = next(iter_a)
                         j = pre_inter
                         cont_overlap = False
-                    except:
+                    except StopIteration:
                         cont_loop = False
 
                 elif s > b[j]:
@@ -905,7 +916,7 @@ class GRegions:
                         res.add(s)
                         try:
                             s = next(iter_a)
-                        except:
+                        except StopIteration:
                             cont_loop = False
                     else:
                         j = j + 1
@@ -914,3 +925,22 @@ class GRegions:
                 self.elements = res.elements
             else:
                 return res
+
+    def get_GSequences(self, FASTA_file):
+        from genomkit import GSequences
+        if os.path.exists(FASTA_file):
+            fasta = GSequences(load=FASTA_file)
+        else:
+            print(FASTA_file + " is not found.")
+            sys.exit()
+        res = GSequences(name=self.name)
+        for region in self.elements:
+            seq = fasta.get_sequence(name=region.sequence,
+                                     start=region.start,
+                                     end=region.end)
+            seq.name = region.name
+            seq.data = region.data
+            if region.orientation == "-":
+                seq.reverse_complement()
+            res.add(seq)
+        return res

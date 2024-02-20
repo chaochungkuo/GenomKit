@@ -56,3 +56,25 @@ Extract the genes by their biotypes from a GTF file
 - miRNA
 
 .. code-block:: python
+
+    from genomkit import GAnnotation
+
+    gtf = GAnnotation(file_path=GTF_hg38, file_format="gtf")
+    target_biotypes = ["protein_coding", "lncRNA", "snRNA", "miRNA"]
+    for biotype in target_biotypes:
+        genes = gtf.get_regions(element_type="gene",
+                                attribute="gene_type", value=biotype)
+        genes.write(filename="hg38_genes_"+biotype+".bed")
+
+Get the sequences in FASTA format from a BED file
+-------------------------------------------------
+
+For example, you have a BED file for all the exons from hg38. Now you want to get their sequences in FASTA format with care of the orientation of the strands.
+
+.. code-block:: python
+
+    from genomkit import GRegions
+
+    exons = GRegions(name="exons", load="hg38_exons.bed")
+    exon_seqs = exons.get_GSequences(FASTA_file=FASTA_hg38)
+    exon_seqs.write_fasta(filename="hg38_exons.fasta")

@@ -111,3 +111,30 @@ class GSequences:
             for key, count in count_dict.items():
                 result[key] = result.get(key, 0) + count
         return result
+
+    def get_sequence(self, name, start, end):
+        """Return the sequence according to the given name, start and end.
+
+        :param name: Sequence name
+        :type name: str
+        :param start: Start position
+        :type start: int
+        :param end: End position
+        :type end: int
+        :return: GSequence
+        :rtype: GSequence
+        """
+        for seq in self.elements:
+            if seq.name == name:
+                return seq.slice_sequence(start, end)
+
+    def write_fasta(self, filename: str, data: bool = False):
+        with open(filename, "w") as fasta_file:
+            for seq in self.elements:
+                if data:
+                    fasta_file.write(">" + seq.name + " " +
+                                     " ".join(seq.data) + "\n")
+                else:
+                    fasta_file.write(f">{seq.name}\n")
+                for i in range(0, len(seq.sequence), 80):
+                    fasta_file.write(f"{seq.sequence[i:i+80]}\n")

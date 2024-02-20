@@ -102,3 +102,17 @@ class GSequence:
         :rtype: dict
         """
         return Counter(self.sequence)
+
+    def slice_sequence(self, start, end):
+        """Return the sequence by the given start and end positions.
+
+        :param start: Start position
+        :type start: int
+        :param end: End position
+        :type end: int
+        :return: Sequence
+        :rtype: str
+        """
+        seq = GSequence(sequence=self.sequence[start:end],
+                        name=self.name, data=self.data)
+        return seq
