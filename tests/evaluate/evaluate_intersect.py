@@ -30,17 +30,11 @@ def time_intersect_python():
 def time_intersect_array():
     intersect = peaks.intersect_array(genes)
 
-@profile
-def time_intersect_posi():
-    intersect = peaks.intersect_posi(genes)
-
 repeat_num = 2
 execution_time = timeit.timeit(time_intersect_python, number=repeat_num)
 print('[{:<20}]'.format('intersect_python'), '{:<5.2f}'.format(execution_time), "seconds")
 execution_time = timeit.timeit(time_intersect_array, number=repeat_num)
 print('[{:<20}]'.format('intersect_array'), '{:<5.2f}'.format(execution_time), "seconds")
-execution_time = timeit.timeit(time_intersect_posi, number=repeat_num)
-print('[{:<20}]'.format('intersect_posi'), '{:<5.2f}'.format(execution_time), "seconds")
 # print(len(intersect))
 # intersect.write("intersect_python.bed")
 # print(len(intersect))

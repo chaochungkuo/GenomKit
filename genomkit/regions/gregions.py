@@ -598,49 +598,6 @@ class GRegions:
                                 name=""))
         return res
 
-    def intersect_posi(self, target, strandness: bool = False):
-        def generate_position_array(position_set, merged_list):
-            boolean_array = [False] * len(merged_list)
-            # Set elements to True according to pos_1
-            for i, element in enumerate(merged_list):
-                if element in position_set:
-                    boolean_array[i] = True
-            return np.array(boolean_array)
-
-        def find_intersects(orientation):
-            pos_1 = self.get_positions_by_seq(sequence=seq,
-                                              orientation=orientation)
-            pos_2 = target.get_positions_by_seq(sequence=seq,
-                                                orientation=orientation)
-            merged_pos = list(pos_1.union(pos_2))
-            array_1 = generate_position_array(pos_1, merged_pos)
-            array_2 = generate_position_array(pos_2, merged_pos)
-            result_array = array_1 & array_2
-            # Find the indices where the value changes
-            indices = np.where(np.diff(result_array))[0] + 1
-            # Group consecutive indices into tuples
-            ranges = [(merged_pos[indices[i - 1]],
-                       merged_pos[indices[i]])
-                      for i in range(1, len(indices), 2)]
-            return ranges
-
-        res = GRegions()
-        list_seq_self = self.get_sequences(unique=True)
-        list_seq_target = target.get_sequences(unique=True)
-        common_seq = [seq for seq in list_seq_self if seq in list_seq_target]
-        for seq in common_seq:
-            if strandness:
-                # positive
-                ranges_pos = find_intersects(orientation="+")
-                ranges_neg = find_intersects(orientation="-")
-                ranges = ranges_pos + ranges_neg
-            else:
-                ranges = find_intersects(orientation=None)
-            for pair in ranges:
-                res.add(GRegion(sequence=seq, start=pair[0], end=pair[1],
-                                name=""))
-        return res
-
     def overlap_count(self, target):
         intersect = self.intersect_python(target, mode="ORIGINAL")
         return len(intersect)
