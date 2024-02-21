@@ -2,7 +2,27 @@
 Starting with a GTF file
 ========================
 
+.. note::
+
+   These tutorials are still under active development.
+
 Because ``GAnnotation`` is able to handle both ``GTF`` and ``GFF``, you can replace the GTF file in the tutorials below with the GFF file. Here we show only GTFs as examples.
+
+.. _gtf_all_genes:
+
+Get all the genes from a GTF file
+---------------------------------------------------
+
+``GTF_hg38`` is the path to the hg38 GTF file for annotation.
+
+.. code-block:: python
+
+    from genomkit import GAnnotation
+
+    gtf = GAnnotation(file_path=GTF_hg38, file_format="gtf")
+    genes = gtf.get_regions(element_type="gene")
+    genes.write(filename="hg38_genes.bed")
+
 
 Extract exon, intron, and intergenetic regions in BED format from a GTF file
 ----------------------------------------------------------------------------

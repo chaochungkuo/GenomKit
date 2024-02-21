@@ -2,6 +2,10 @@
 Starting a FASTQ file
 =====================
 
+.. note::
+
+   These tutorials are still under active development.
+
 Trimming a FASTQ file for both sequences and quality
 ----------------------------------------------------
 

@@ -5,6 +5,7 @@ import numpy as np
 from .io import load_BED
 import os
 import sys
+from copy import deepcopy
 
 
 ###########################################################################
@@ -944,3 +945,41 @@ class GRegions:
                 seq.reverse_complement()
             res.add(seq)
         return res
+
+    def cluster(self, max_distance):
+        """Cluster the regions with a certain distance and return a new
+        GRegions.
+
+        :param max_distance: Maximal distance for combining
+        :type max_distance: int
+        :return: Combined regions
+        :rtype: GRegions
+
+        ::
+
+            self           ----           ----            ----
+                              ----             ----                 ----
+            Result(d=1)    -------        ---------       ----      ----
+            Result(d=10)   ---------------------------------------------
+        """
+        if not self.sorted:
+            self.sort()
+        if len(self) == 0:
+            return GRegions()
+        elif len(self) == 1:
+            return self
+        else:
+            z = GRegions('Clustered region set')
+            previous = deepcopy(self.elements[0])
+            for s in self.elements[1:]:
+                s_ext = s.extend(upstream=max_distance,
+                                 downstream=max_distance,
+                                 inplace=False)
+                if s_ext.overlap(previous):
+                    previous.start = min(previous.start, s.start)
+                    previous.end = max(previous.end, s.end)
+                else:
+                    z.add(previous)
+                    previous = deepcopy(s)
+            z.add(previous)
+            return z
