@@ -1,6 +1,6 @@
-=========================
-Examples with FASTQ files
-=========================
+=====================
+Starting a FASTQ file
+=====================
 
 Trimming a FASTQ file for both sequences and quality
 ----------------------------------------------------
