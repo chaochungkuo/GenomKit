@@ -14,8 +14,34 @@ def load_BED(filename: str):
             for line in file:
                 if not line.startswith("#"):
                     infos = line.strip().split()
-                    res.add(GRegion(sequence=infos[0],
-                                    start=int(infos[1]), end=int(infos[2]),
-                                    orientation=infos[5],
-                                    name=infos[3], score=infos[4]))
+                    if len(infos) == 3:
+                        res.add(GRegion(sequence=infos[0],
+                                        start=int(infos[1]),
+                                        end=int(infos[2])))
+                    elif len(infos) == 4:
+                        res.add(GRegion(sequence=infos[0],
+                                        start=int(infos[1]),
+                                        end=int(infos[2]),
+                                        name=infos[3]))
+                    elif len(infos) == 5:
+                        res.add(GRegion(sequence=infos[0],
+                                        start=int(infos[1]),
+                                        end=int(infos[2]),
+                                        name=infos[3],
+                                        score=infos[4]))
+                    elif len(infos) == 6:
+                        res.add(GRegion(sequence=infos[0],
+                                        start=int(infos[1]),
+                                        end=int(infos[2]),
+                                        name=infos[3],
+                                        score=infos[4],
+                                        orientation=infos[5]))
+                    elif len(infos) > 6:
+                        res.add(GRegion(sequence=infos[0],
+                                        start=int(infos[1]),
+                                        end=int(infos[2]),
+                                        name=infos[3],
+                                        score=infos[4],
+                                        orientation=infos[5],
+                                        data=infos[6:]))
         return res
