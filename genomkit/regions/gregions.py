@@ -775,7 +775,7 @@ class GRegions:
                                 if counts == len(regions.elements):
                                     finished = 1
                             else:
-                                # region.sequence < 
+                                # region.sequence <
                                 # target.sequences[counts].sequence:
                                 small_self.add(r)
                     else:
@@ -805,8 +805,9 @@ class GRegions:
                 return self
             if not self.sorted:
                 self.sort()
-            # if there is overlap within self or y, and the `merge` option is set,
-            # we merge any overlapping sequence and create two different GRegions
+            # if there is overlap within self or y, and the `merge` option
+            # is set, we merge any overlapping sequence and create two
+            # different GRegions
             if merge:
                 a = self.merge(inplace=False)
                 b = regions.merge(inplace=False)
@@ -846,10 +847,18 @@ class GRegions:
                         # ------        -----      -------
                         #   ------        --        ---
                         if s.end > b[j].end:
-                            s1 = GRegion(sequence=s.sequence, start=s.start, end=b[j].start,
-                                         name=s.name, orientation=s.orientation, data=s.data)
-                            s2 = GRegion(sequence=s.sequence, start=b[j].end, end=s.end,
-                                         name=s.name, orientation=s.orientation, data=s.data)
+                            s1 = GRegion(sequence=s.sequence,
+                                         start=s.start,
+                                         end=b[j].start,
+                                         name=s.name,
+                                         orientation=s.orientation,
+                                         data=s.data)
+                            s2 = GRegion(sequence=s.sequence,
+                                         start=b[j].end,
+                                         end=s.end,
+                                         name=s.name,
+                                         orientation=s.orientation,
+                                         data=s.data)
                             res.add(s1)
                             s = s2
                             if j < last_j:
@@ -983,3 +992,13 @@ class GRegions:
                     previous = deepcopy(s)
             z.add(previous)
             return z
+
+    def total_coverage(self):
+        """Return the total coverage (bp) of all the regions.
+
+        :return: Total coverage (bp)
+        :rtype: int
+        """
+        merged_regions = self.merge(inplace=False)
+        cov = sum([len(r) for r in merged_regions])
+        return cov

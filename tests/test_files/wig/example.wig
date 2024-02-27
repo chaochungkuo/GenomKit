@@ -1,0 +1,13 @@
+track type=wiggle_0 name="Example Track" description="Example Wiggle Track"
+variableStep chrom=chr1
+1000 0.5
+2000 0.7
+3000 0.9
+4000 1.0
+5000 0.8
+variableStep chrom=chr2
+1000 0.3
+2000 0.4
+3000 0.6
+4000 0.7
+5000 0.5
