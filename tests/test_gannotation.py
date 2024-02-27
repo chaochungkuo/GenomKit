@@ -11,6 +11,14 @@ gff_file = os.path.join(script_path,
 
 class TestGAnnotation(unittest.TestCase):
 
+    def test_load_data(self):
+        gtf = GAnnotation(file_path=gtf_file,
+                          file_format="gtf")
+        self.assertEqual(len(gtf.genes), 69)
+        gff = GAnnotation(file_path=gff_file,
+                          file_format="gff")
+        self.assertEqual(len(gff.genes), 69)
+
     def test_len(self):
         gtf = GAnnotation(file_path=gtf_file,
                           file_format="gtf")

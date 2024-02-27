@@ -160,6 +160,12 @@ class TestGRegions(unittest.TestCase):
         # regions1.subtract(regions2, whole_region=True)
         # self.assertEqual(len(regions1[0]), 0)
 
+    def test_total_coverage(self):
+        regions1 = GRegions(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example.bed"))
+        self.assertEqual(regions1.total_coverage(), 4000)
+
 
 if __name__ == '__main__':
     unittest.main()
