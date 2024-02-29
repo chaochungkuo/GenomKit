@@ -23,7 +23,7 @@ peaks = GRegions(name="genes", load=peaks_bed_file)
 
 @profile # noqa
 def time_intersect_python():
-    intersect = peaks.intersect_python(genes)
+    intersect = peaks.intersect(genes)
 
 
 @profile # noqa

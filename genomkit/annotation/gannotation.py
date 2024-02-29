@@ -78,9 +78,11 @@ class GAnnotation:
                 elif feature_type == 'exon':
                     exon_id = attributes['exon_id'].strip('"')
                     transcript_id = attributes['transcript_id'].strip('"')
+                    gene_id = attributes['gene_id'].strip('"')
                     self.exons[exon_id] = {
                         'id': exon_id,
                         'transcript_id': transcript_id,
+                        'gene_id': gene_id,
                         'chr': fields[0],
                         'start': int(fields[3]),
                         'end': int(fields[4]),

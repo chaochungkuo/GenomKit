@@ -66,3 +66,33 @@ class TestGAnnotation(unittest.TestCase):
                           file_format="gff")
         self.assertEqual(gff.get_transcript("ENST00000456328.2")["gene_id"],
                          "ENSG00000290825.1")
+
+    def test_get_exon(self):
+        gtf = GAnnotation(file_path=gtf_file,
+                          file_format="gtf")
+        self.assertEqual(gtf.get_exon("ENSE00002234944.1")["gene_id"],
+                         "ENSG00000290825.1")
+        gff = GAnnotation(file_path=gff_file,
+                          file_format="gff")
+        self.assertEqual(gff.get_exon("ENSE00002234944.1")["gene_id"],
+                         "ENSG00000290825.1")
+
+    def test_get_transcript_ids(self):
+        gtf = GAnnotation(file_path=gtf_file,
+                          file_format="gtf")
+        self.assertEqual(gtf.get_transcript_ids()[0],
+                         "ENST00000456328.2")
+        gff = GAnnotation(file_path=gff_file,
+                          file_format="gff")
+        self.assertEqual(gff.get_transcript_ids()[0],
+                         "ENST00000456328.2")
+
+    def test_get_exon_ids(self):
+        gtf = GAnnotation(file_path=gtf_file,
+                          file_format="gtf")
+        self.assertEqual(gtf.get_exon_ids()[0],
+                         "ENSE00002234944.1")
+        gff = GAnnotation(file_path=gff_file,
+                          file_format="gff")
+        self.assertEqual(gff.get_exon_ids()[0],
+                         "ENSE00002234944.1")

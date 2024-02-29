@@ -236,8 +236,8 @@ class GRegions:
         else:
             return res
 
-    def intersect_python(self, target, mode: str = "OVERLAP",
-                         rm_duplicates: bool = False):
+    def intersect(self, target, mode: str = "OVERLAP",
+                  rm_duplicates: bool = False):
         """Return a GRegions for the intersections between the two given
         GRegions objects. There are three modes for overlapping:
 
@@ -652,7 +652,7 @@ class GRegions:
         return res
 
     def overlap_count(self, target):
-        intersect = self.intersect_python(target, mode="ORIGINAL")
+        intersect = self.intersect(target, mode="ORIGINAL")
         return len(intersect)
 
     def subtract(self, regions, whole_region: bool = False,
@@ -937,6 +937,14 @@ class GRegions:
                 return res
 
     def get_GSequences(self, FASTA_file):
+        """Return a GSequences object according to the loci on the given
+        reference FASTQ file.
+
+        :param FASTA_file: Path to the FASTA file
+        :type FASTA_file: str
+        :return: A GSequences.
+        :rtype: GSequences
+        """
         from genomkit import GSequences
         if os.path.exists(FASTA_file):
             fasta = GSequences(load=FASTA_file)
@@ -1002,3 +1010,51 @@ class GRegions:
         merged_regions = self.merge(inplace=False)
         cov = sum([len(r) for r in merged_regions])
         return cov
+
+    def filter_by_names(self, names, inplace=False):
+        """Filter the elements by the given list of names
+
+        :param names: A list of names for filtering
+        :type names: list
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object.
+        :type inplace: bool, default to True
+        :return: A GRegions with filtered regions
+        :rtype: GRegions
+        """
+        res = GRegions(name=self.name)
+        for r in self.elements:
+            if r.name in names:
+                res.add(r)
+        if inplace:
+            self.elements = res.elements
+        else:
+            return res
+
+    def filter_by_score(self, larger_than=0, smaller_than=0, inplace=False):
+        """Filter the elements by the given list of names
+
+        :param larger_than: Define the minimal cutoff. Any region with the
+                            score larger than this value will be returned.
+        :type larger_than: float
+        :param smaller_than: Define the maximal cutoff. Any region with the
+                            score smaller than this value will be returned.
+        :type smaller_than: float
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object.
+        :type inplace: bool, default to True
+        :return: A GRegions with filtered regions
+        :rtype: GRegions
+        """
+        res = GRegions(name=self.name)
+        for r in self.elements:
+            if r.score > larger_than:
+                res.add(r)
+            elif r.score < smaller_than:
+                res.add(r)
+            else:
+                continue
+        if inplace:
+            self.elements = res.elements
+        else:
+            return res

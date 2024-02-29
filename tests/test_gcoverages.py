@@ -1,15 +1,15 @@
 import unittest
-from genomkit import GCoverage, GRegions, GRegion
+from genomkit import GCoverages, GRegions, GRegion
 # from genomkit.sequences.io import load_FASTA, load_FASTQ
 import os
 
 script_path = os.path.dirname(__file__)
 
 
-class TestGCoverage(unittest.TestCase):
+class TestGCoverages(unittest.TestCase):
 
     def test_load_coverage_from_bigwig(self):
-        cov = GCoverage()
+        cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bw")
@@ -19,7 +19,7 @@ class TestGCoverage(unittest.TestCase):
         self.assertEqual(len(cov.coverage), 2)
         self.assertEqual(list(cov.coverage.keys())[0], "1")
         self.assertEqual(list(cov.coverage.keys())[1], "10")
-        cov = GCoverage()
+        cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bigwig")
@@ -27,7 +27,7 @@ class TestGCoverage(unittest.TestCase):
         self.assertEqual(len(cov.coverage.keys()), 2)
 
     def test_calculate_coverage_from_bam(self):
-        cov = GCoverage()
+        cov = GCoverages()
         cov.calculate_coverage_from_bam(
             filename=os.path.join(script_path,
                                   "test_files/bam/Col0_C1.100k.bam")
@@ -37,14 +37,14 @@ class TestGCoverage(unittest.TestCase):
         self.assertEqual(len(cov.coverage.keys()), 1)
 
     def test_get_coverage(self):
-        cov = GCoverage()
+        cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bw")
             )
         res = cov.get_coverage("10")
         self.assertEqual(len(res), 130694993)
-        cov = GCoverage()
+        cov = GCoverages()
         cov.calculate_coverage_from_bam(
             filename=os.path.join(script_path,
                                   "test_files/bam/Col0_C1.100k.bam")
@@ -53,7 +53,7 @@ class TestGCoverage(unittest.TestCase):
         self.assertEqual(len(res), 30427671)
 
     def test_filter_regions_coverage(self):
-        cov = GCoverage()
+        cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bw")
@@ -67,7 +67,7 @@ class TestGCoverage(unittest.TestCase):
                          GRegion(sequence="1", start=100, end=500))
 
     def test_total_sequencing_depth(self):
-        cov = GCoverage()
+        cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bw")
@@ -76,7 +76,7 @@ class TestGCoverage(unittest.TestCase):
         self.assertEqual(int(res), 272)
 
     def test_scale_coverage(self):
-        cov = GCoverage()
+        cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bw")

@@ -1,18 +1,20 @@
 import pyBigWig
 import numpy as np
+import pandas as pd
 import pysam
+from tqdm import tqdm
 
 
-class GCoverage:
+class GCoverages:
     """
-    GCoverage module
+    GCoverages module
 
     This module contains functions and classes for working with a collection of
     genomic coverages. It provides utilities for handling and analyzing the
     interactions of many genomic coverages.
     """
     def __init__(self, bin_size: int = 1):
-        """Initialize GCoverage object.
+        """Initialize GCoverages object.
 
         :param bin_size: Size of the bin for coverage calculation.
                          Defaults to 1 (single nucleotide resolution).
@@ -59,6 +61,34 @@ class GCoverage:
                                         for i in range(0,
                                         len(self.coverage[chrom]),
                                         self.bin_size)]
+
+    def calculate_coverage_GRegions(self, regions, scores,
+                                    strandness: bool = False):
+        """Calculate the coverage from two GRegions. `regions` defines the loci for the coverage
+        `scores` contains the scores loaded into the coverage.
+
+        :param regions: Define the loci and the length of the coverage
+        :type regions: GRegions
+        :param scores: Provide the scores for calculating the coverage
+        :type scores: GRegions
+        :param strandness: Make this operation strandness specific, defaults to False
+        :type strandness: bool, optional
+        """
+        from genomkit import GRegions
+        assert isinstance(regions, GRegions)
+        assert isinstance(scores, GRegions)
+        filtered_scores = scores.intersect(target=regions,
+                                           mode="ORIGIN")
+        for region in tqdm(regions, desc="Calculating coverage",
+                           total=len(regions)):
+            self.coverage[region] = np.zeros(shape=len(region) //
+                                             self.bin_size)
+            for target in filtered_scores:
+                if region.overlap(target, strandness=strandness):
+                    start_ind = (target.start - region.start) // self.bin_size
+                    end_ind = (target.end - region.end) // self.bin_size
+                    for i in range(start_ind, end_ind):
+                        self.coverage[region][i] += target.score
 
     def get_coverage(self, seq_name: str):
         """Get coverage data for a specific sequence by name. This sequence
@@ -111,3 +141,19 @@ class GCoverage:
             self.coverage[chrom][np.isnan(self.coverage[chrom])] = 0
             # Scale the non-NaN values
             self.coverage[chrom] = self.coverage[chrom] * coefficient
+
+    def flip_negative_regions(self):
+        """Flip the coverage arrays which are on the negative strands. If the
+        coverage arrays are calculated by the whole chromosomes, it won't
+        work.
+        """
+        for region, cov in self.coverage.items():
+            if region.orientation == "-":
+                self.coverage[region] = cov[::-1]
+
+    def get_dataframe(self):
+        """Return a pandas dataframe concatenating all coverage arrays."""
+        df = pd.DataFrame(self.coverage)
+        df = df.transpose()
+        df.index.name = None
+        return df

@@ -80,3 +80,9 @@ Often you want to find the interaction between two BED files, but not simply by 
     TFBSs = GRegions(name="TFBSs", load="TFBSs.bed")
     close_TFBSs = TFBSs.intersect(target=promoters, mode="ORIGINAL")
     close_TFBSs.write(filename="TFBSs_close_to_promoters.bed")
+
+Generate a heapmap from two BED files: one BED file is used as windows and the other used as the signal
+-------------------------
+
+Sometimes your signals (scores) are stored in a BED file (column 5), instead of BEDGraph or BigWig. And now you want to visualize the interactions between these two BED files. For example, `DMSs.bed` contains the differential methylated CpGs with the score for hypermethylation or hypomethylation. And `TSSs.bed` include all transcription start sites with a window of 2000 bp. Now you want to visualize their interaction with a heatmap.
+
