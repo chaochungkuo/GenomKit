@@ -5,3 +5,4 @@ pysam==0.22.0
 tqdm
 pyBigWig==0.3.22
 pandas
+scipy

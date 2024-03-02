@@ -104,3 +104,9 @@ class GRegionsSet:
         if percentage:
             df = df.div(df.sum(axis=1), axis=0) * 100
         return df
+
+    def test_association(self, another_set):
+        from scipy.stats import chi2_contingency
+        contingency_table = self.count_overlaps(query_set=another_set)
+        chi2_stat, p_val, _, _ = chi2_contingency(contingency_table)
+        return chi2_stat, p_val

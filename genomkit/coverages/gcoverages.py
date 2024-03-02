@@ -64,8 +64,8 @@ class GCoverages:
 
     def calculate_coverage_GRegions(self, regions, scores,
                                     strandness: bool = False):
-        """Calculate the coverage from two GRegions. `regions` defines the loci for the coverage
-        `scores` contains the scores loaded into the coverage.
+        """Calculate the coverage from two GRegions. `regions` defines the loci
+        for the coverage `scores` contains the scores loaded into the coverage.
 
         :param regions: Define the loci and the length of the coverage
         :type regions: GRegions
