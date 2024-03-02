@@ -1,4 +1,4 @@
-chr1    500   1500   Feature1  0      +
-chr1    3500   4500   Feature2  0      +
-chr2    4500   5500   Feature3  0      +
-chr2    7500   8500   Feature4  0      +
+chr1    500   1500   Feature1  10      +
+chr1    3500   4500   Feature2  20      +
+chr2    4500   5500   Feature3  30      +
+chr2    7500   8500   Feature4  40      +

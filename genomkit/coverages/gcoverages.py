@@ -71,22 +71,25 @@ class GCoverages:
         :type regions: GRegions
         :param scores: Provide the scores for calculating the coverage
         :type scores: GRegions
-        :param strandness: Make this operation strandness specific, defaults to False
+        :param strandness: Make this operation strandness specific, defaults
+                           to False
         :type strandness: bool, optional
         """
         from genomkit import GRegions
         assert isinstance(regions, GRegions)
         assert isinstance(scores, GRegions)
         filtered_scores = scores.intersect(target=regions,
-                                           mode="ORIGIN")
+                                           mode="ORIGINAL")
         for region in tqdm(regions, desc="Calculating coverage",
                            total=len(regions)):
             self.coverage[region] = np.zeros(shape=len(region) //
                                              self.bin_size)
             for target in filtered_scores:
                 if region.overlap(target, strandness=strandness):
-                    start_ind = (target.start - region.start) // self.bin_size
-                    end_ind = (target.end - region.end) // self.bin_size
+                    start_ind = (max(0, target.start - region.start))
+                    start_ind = start_ind // self.bin_size
+                    end_ind = (min(len(region), target.end - region.start))
+                    end_ind = end_ind // self.bin_size
                     for i in range(start_ind, end_ind):
                         self.coverage[region][i] += target.score
 

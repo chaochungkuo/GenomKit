@@ -36,6 +36,18 @@ class TestGCoverages(unittest.TestCase):
         # ['1']
         self.assertEqual(len(cov.coverage.keys()), 1)
 
+    def test_calculate_coverage_GRegions(self):
+        regions = GRegions(name="test",
+                           load=os.path.join(script_path,
+                                             "test_files/bed/example2.bed"))
+        cov = GCoverages()
+        cov.calculate_coverage_GRegions(regions=regions, scores=regions)
+        self.assertEqual(len(cov.coverage.keys()), 4)
+        self.assertEqual(cov.coverage[regions[0]][0], 10)
+        self.assertEqual(cov.coverage[regions[1]][0], 20)
+        self.assertEqual(cov.coverage[regions[2]][0], 30)
+        self.assertEqual(cov.coverage[regions[3]][0], 40)
+
     def test_get_coverage(self):
         cov = GCoverages()
         cov.load_coverage_from_bigwig(
