@@ -67,6 +67,8 @@ Get all promoter regions in BED format from a GTF file
                             center="5prime", inplace=False)
     promoters.write(filename="hg38_promoters.bed")
 
+.. _gtf_genes_biotypes:
+
 Extract the genes by their biotypes from a GTF file
 ---------------------------------------------------
 

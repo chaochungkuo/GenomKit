@@ -86,3 +86,51 @@ Generate a heapmap from two BED files: one BED file is used as windows and the o
 
 Sometimes your signals (scores) are stored in a BED file (column 5), instead of BEDGraph or BigWig. And now you want to visualize the interactions between these two BED files. For example, `DMSs.bed` contains the differential methylated CpGs with the score for hypermethylation or hypomethylation. And `TSSs.bed` include all transcription start sites with a window of 2000 bp. Now you want to visualize their interaction with a heatmap.
 
+
+============================
+Starting with many BED files
+============================
+
+
+When you have multiple BED files and want to investigate the interactions among those sets of genomic elements, you need to use `GRegionsSet` class. Below are some usage cases.
+
+Test the relevance of multiple peaks in BED files to different biotypes in GTF
+---------------------------
+
+For example, you have 4 BED files for different peaks:
+
+- `peaks_A.bed`
+- `peaks_B.bed`
+- `peaks_C.bed`
+- `peaks_D.bed`
+
+And you have generated some BED files for different biotypes in human (:ref:`Please refer to this tutorial <_gtf_genes_biotypes>`).
+
+- `hg38_protein_coding_genes.bed`
+- `hg38_lncRNA_genes.bed`
+- `hg38_snRNA_genes.bed`
+- `hg38_miRNA_genes.bed`
+
+Now you want to check the overlaps of the peaks with the genes.
+
+.. code-block:: python
+
+    from genomkit import GRegionsSet
+    # load peaks
+    peaks_dict = {"A": "./peaks_A.bed",
+                  "B": "./peaks_B.bed",
+                  "C": "./peaks_C.bed",
+                  "D": "./peaks_D.bed",}
+    peaks = GRegionsSet(name="peaks", load_dict=peaks_dict)
+    # load biotypes
+    biotypes_dict = {"protein_coding": "./hg38_protein_coding_genes.bed",
+                     "lncRNA": "./hg38_lncRNA_genes.bed",
+                     "snRNA": "./hg38_snRNA_genes.bed",
+                     "miRNA": "./hg38_miRNA_genes.bed",}
+    biotypes = GRegionsSet(name="biotypes", load_dict=biotypes_dict)
+    # Get a dataframe for overlapping counts
+    overlaps = peaks.count_overlaps(query_set=biotypes)
+    # Visualization
+
+    # Testing the association
+    peaks.test_

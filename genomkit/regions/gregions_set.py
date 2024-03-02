@@ -77,12 +77,15 @@ class GRegionsSet:
             res[name] = len(regions)
         return res
 
-    def count_overlaps(self, query_set):
+    def count_overlaps(self, query_set, percentage: bool = False):
         """Return a pandas dataframe of the numbers of overlapping regions
         between the reference GRegionsSet (self) and the query GRegionsSet.
 
         :param query_set: Query GRegionsSet
         :type query_set: GRegionsSet
+        :param percentage: Convert the contingency table into percentage. The
+                           sum per row (reference) is 100%, defaults to False
+        :type percentage: bool, optional
         :return: Matrix of numbers of overlaps
         :rtype: dataframe
         """
@@ -98,4 +101,6 @@ class GRegionsSet:
         df = pd.DataFrame(res,
                           index=row_names,
                           columns=col_names)
+        if percentage:
+            df = df.div(df.sum(axis=1), axis=0) * 100
         return df
