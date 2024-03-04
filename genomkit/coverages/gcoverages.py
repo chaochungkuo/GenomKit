@@ -14,7 +14,7 @@ class GCoverages:
     genomic coverages. It provides utilities for handling and analyzing the
     interactions of many genomic coverages.
     """
-    def __init__(self, bin_size: int = 1, load: str = ""):
+    def __init__(self, bin_size: int = 1, load: str = "", windows=None):
         """Initialize GCoverages object.
 
         :param bin_size: Size of the bin for coverage calculation.
@@ -33,7 +33,7 @@ class GCoverages:
             self.calculate_coverage_GRegions(regions=regions,
                                              scores=regions)
 
-    def load_coverage_from_bigwig(self, filename: str, windows=False):
+    def load_coverage_from_bigwig(self, filename: str, windows=None):
         """Load coverage data from a bigwig file.
 
         :param filename: Path to the bigwig file.
@@ -72,7 +72,7 @@ class GCoverages:
                 self.coverage[window] = coverage
         bw.close()
 
-    def calculate_coverage_from_bam(self, filename: str, windows=False):
+    def calculate_coverage_from_bam(self, filename: str, windows=None):
         """Calculate coverage from a BAM file.
 
         :param filename: Path to the BAM file.
@@ -105,13 +105,13 @@ class GCoverages:
                                                    len(self.coverage[r]),
                                                    self.bin_size)]
 
-    def calculate_coverage_GRegions(self, regions, scores,
+    def calculate_coverage_GRegions(self, scores, windows=None,
                                     strandness: bool = False):
-        """Calculate the coverage from two GRegions. `regions` defines the loci
+        """Calculate the coverage from two GRegions. `windows` defines the loci
         for the coverage `scores` contains the scores loaded into the coverage.
 
-        :param regions: Define the loci and the length of the coverage
-        :type regions: GRegions
+        :param windows: Define the windows and the length of the coverage
+        :type windows: GRegions
         :param scores: Provide the scores for calculating the coverage
         :type scores: GRegions
         :param strandness: Make this operation strandness specific, defaults
@@ -119,12 +119,12 @@ class GCoverages:
         :type strandness: bool, optional
         """
         from genomkit import GRegions
-        assert isinstance(regions, GRegions)
+        assert isinstance(windows, GRegions)
         assert isinstance(scores, GRegions)
-        filtered_scores = scores.intersect(target=regions,
+        filtered_scores = scores.intersect(target=windows,
                                            mode="ORIGINAL")
-        for region in tqdm(regions, desc="Calculating coverage",
-                           total=len(regions)):
+        for region in tqdm(windows, desc="Calculating coverage",
+                           total=len(windows)):
             self.coverage[region] = np.zeros(shape=len(region) //
                                              self.bin_size)
             for target in filtered_scores:

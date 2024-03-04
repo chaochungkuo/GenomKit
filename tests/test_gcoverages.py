@@ -41,7 +41,7 @@ class TestGCoverages(unittest.TestCase):
                            load=os.path.join(script_path,
                                              "test_files/bed/example2.bed"))
         cov = GCoverages()
-        cov.calculate_coverage_GRegions(regions=regions, scores=regions)
+        cov.calculate_coverage_GRegions(windows=regions, scores=regions)
         self.assertEqual(len(cov.coverage.keys()), 4)
         self.assertEqual(cov.coverage[regions[0]][0], 10)
         self.assertEqual(cov.coverage[regions[1]][0], 20)
