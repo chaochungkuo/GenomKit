@@ -4,6 +4,7 @@ import pandas as pd
 import pysam
 from tqdm import tqdm
 from genomkit import GRegions, GRegion
+import os
 
 
 class GCoverages:
@@ -24,13 +25,12 @@ class GCoverages:
         self.coverage = {}
         self.bin_size = bin_size
         if load.lower().endswith(".bw") or load.lower().endswith(".bigwig"):
-            self.load_coverage_from_bigwig(load)
+            self.load_coverage_from_bigwig(load, windows=windows)
         elif load.lower().endswith(".bam"):
-            self.calculate_coverage_from_bam(load)
+            self.calculate_coverage_from_bam(load, windows=windows)
         elif load.lower().endswith(".bed"):
-            from genomkit import GRegions
             regions = GRegions(name=load, load=load)
-            self.calculate_coverage_GRegions(regions=regions,
+            self.calculate_coverage_GRegions(windows=windows,
                                              scores=regions)
 
     def load_coverage_from_bigwig(self, filename: str, windows=None):
@@ -50,23 +50,32 @@ class GCoverages:
                 chrom_regions.add(GRegion(sequence=chrom,
                                           start=0,
                                           end=int(chrom_length)))
-            for r in chrom_regions:
+            for r in tqdm(chrom_regions,
+                          desc=os.path.basename(filename),
+                          total=len(chrom_regions)):
                 coverage = bw.values(r.sequence, r.start, r.end, numpy=True)
                 if self.bin_size > 1:
                     coverage = [np.mean(coverage[i:i+self.bin_size])
+                                if i+self.bin_size <= len(coverage)
+                                else np.mean(coverage[i:])
                                 for i in range(0, len(coverage),
                                                self.bin_size)]
                 self.coverage[r] = coverage
         else:
             # Get only the coverage on the defined regions
             assert isinstance(windows, GRegions)
-            for window in windows:
+            self.coverage = {}
+            for window in tqdm(windows,
+                               desc=os.path.basename(filename),
+                               total=len(windows)):
                 coverage = bw.values(window.sequence,
                                      window.start,
                                      window.end,
                                      numpy=True)
                 if self.bin_size > 1:
                     coverage = [np.mean(coverage[i:i+self.bin_size])
+                                if i+self.bin_size <= len(coverage)
+                                else np.mean(coverage[i:])
                                 for i in range(0, len(coverage),
                                                self.bin_size)]
                 self.coverage[window] = coverage
@@ -91,10 +100,10 @@ class GCoverages:
                     self.coverage[r] = [0] * chrom_len
                 self.coverage[r][pileupcolumn.reference_pos] += 1
         if windows:
-            for r in windows:
-                self.coverage[r] = [0] * len(r)
-                for pileupcolumn in bam.pileup(r.sequence, r.start, r.end):
-                    self.coverage[r][pileupcolumn.reference_pos-r.start] += 1
+            for w in windows:
+                self.coverage[w] = [0] * len(w)
+                for pileupcolumn in bam.pileup(w.sequence, w.start, w.end):
+                    self.coverage[w][pileupcolumn.reference_pos-w.start] += 1
         bam.close()
         # Adjust for bin size
         for r in self.coverage.keys():

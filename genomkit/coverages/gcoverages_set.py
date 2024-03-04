@@ -11,7 +11,7 @@ class GCoveragesSet:
     analyzing the interactions of many genomic coverages.
     """
 
-    def __init__(self, name: str = "", load_dict=None):
+    def __init__(self, name: str = "", load_dict=None, windows=None):
         """Initiate a GCoveragesSet object which can contain multiple
         GCoverages.
 
@@ -27,8 +27,7 @@ class GCoveragesSet:
         if load_dict:
             for name, filename in load_dict.items():
                 self.add(name=name,
-                         gcov=GCoverages(name=name,
-                                         load=filename))
+                         gcov=GCoverages(windows=windows, load=filename))
 
     def add(self, name, gcov):
         """Add a GCoverages into GCoveragesSet.
@@ -57,8 +56,8 @@ class GCoveragesSet:
                 f" object has no attribute '{key}'"
                 )
 
-    def __setattr__(self, key, value):
-        self.collection[key] = value
+    # def __setattr__(self, key, value):
+    #     self.collection[key] = value
 
     def get_names(self):
         """Return the names of all GCoverages.

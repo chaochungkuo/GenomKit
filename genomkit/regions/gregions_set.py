@@ -46,14 +46,14 @@ class GRegionsSet:
         """
         return len(self.collection)
 
-    def __getattr__(self, key):
-        if key in self.collection:
-            return self.collection[key]
-        else:
-            raise AttributeError(
-                f"'{self.collection.__class__.__name__}'"
-                f" object has no attribute '{key}'"
-                )
+    # def __getattr__(self, key):
+    #     if key in self.collection:
+    #         return self.collection[key]
+    #     else:
+    #         raise AttributeError(
+    #             f"'{self.collection.__class__.__name__}'"
+    #             f" object has no attribute '{key}'"
+    #             )
 
     def __setattr__(self, key, value):
         self.collection[key] = value

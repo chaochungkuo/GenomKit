@@ -238,16 +238,16 @@ class GRegion:
         if center == "mid_point":
             center = int(0.5*(self.end-self.start))
             if self.orientation == "-":
-                start = center+extend_upstream
-                end = center-extend_downstream
+                start = center-extend_downstream
+                end = center+extend_upstream
             else:
                 start = center-extend_upstream
                 end = center+extend_downstream
         elif center == "5prime":
             if self.orientation == "-":
                 center = self.end
-                start = center+extend_upstream
-                end = center-extend_downstream
+                start = center-extend_downstream
+                end = center+extend_upstream
             else:
                 center = self.start
                 start = center-extend_upstream
@@ -255,8 +255,8 @@ class GRegion:
         elif center == "3prime":
             if self.orientation == "-":
                 center = self.start
-                start = center+extend_upstream
-                end = center-extend_downstream
+                start = center-extend_downstream
+                end = center+extend_upstream
             else:
                 center = self.end
                 start = center-extend_upstream
