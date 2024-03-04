@@ -17,8 +17,8 @@ class TestGCoverages(unittest.TestCase):
         # cov.load_coverage_from_bigwig(filename="tests/test_files/bigwig/test.bw")
         # {'1': 195471971, '10': 130694993}
         self.assertEqual(len(cov.coverage), 2)
-        self.assertEqual(list(cov.coverage.keys())[0], "1")
-        self.assertEqual(list(cov.coverage.keys())[1], "10")
+        self.assertEqual(list(cov.coverage.keys())[0].sequence, "1")
+        self.assertEqual(list(cov.coverage.keys())[1].sequence, "10")
         cov = GCoverages()
         cov.load_coverage_from_bigwig(
             filename=os.path.join(script_path,
@@ -54,14 +54,18 @@ class TestGCoverages(unittest.TestCase):
             filename=os.path.join(script_path,
                                   "test_files/bigwig/test.bw")
             )
-        res = cov.get_coverage("10")
+        res = cov.get_coverage(GRegion(sequence="10",
+                                       start=0,
+                                       end=130694993))
         self.assertEqual(len(res), 130694993)
         cov = GCoverages()
         cov.calculate_coverage_from_bam(
             filename=os.path.join(script_path,
                                   "test_files/bam/Col0_C1.100k.bam")
             )
-        res = cov.get_coverage("1")
+        res = cov.get_coverage(GRegion(sequence="1",
+                                       start=0,
+                                       end=30427671))
         self.assertEqual(len(res), 30427671)
 
     def test_filter_regions_coverage(self):
