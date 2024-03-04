@@ -56,8 +56,11 @@ class GCoveragesSet:
                 f" object has no attribute '{key}'"
                 )
 
-    # def __setattr__(self, key, value):
-    #     self.collection[key] = value
+    def __getitem__(self, key):
+        return self.collection[key]
+
+    def __iter__(self):
+        return iter(self.collection.values())
 
     def get_names(self):
         """Return the names of all GCoverages.
@@ -66,3 +69,11 @@ class GCoveragesSet:
         :rtype: list
         """
         return list(self.collection.keys())
+
+    def flip_negative_regions(self):
+        """Flip the coverage arrays which are on the negative strands. If the
+        coverage arrays are calculated by the whole chromosomes, it won't
+        work.
+        """
+        for cov in self.collection.values():
+            cov.flip_negative_regions()
