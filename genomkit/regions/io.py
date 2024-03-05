@@ -1,4 +1,5 @@
 import os
+from tqdm import tqdm
 
 
 ###########################################################################
@@ -17,7 +18,9 @@ def load_BED(filename: str):
     else:
         res = GRegions()
         with open(filename, 'r') as file:
-            for line in file:
+            for line in tqdm(file,
+                             desc=os.path.basename(filename),
+                             unit=" lines"):
                 if not line.startswith("#"):
                     infos = line.strip().split()
                     if len(infos) == 3:

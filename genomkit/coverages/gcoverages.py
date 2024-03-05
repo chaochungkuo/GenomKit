@@ -28,10 +28,11 @@ class GCoverages:
             self.load_coverage_from_bigwig(load, windows=windows)
         elif load.lower().endswith(".bam"):
             self.calculate_coverage_from_bam(load, windows=windows)
-        elif load.lower().endswith(".bed"):
-            regions = GRegions(name=load, load=load)
-            self.calculate_coverage_GRegions(windows=windows,
-                                             scores=regions)
+        elif load.lower().endswith(".bed") or \
+                load.lower().endswith(".bedgraph"):
+            regions = GRegions(name=os.path.basename(load), load=load)
+            self.calculate_coverage_GRegions2(windows=windows,
+                                              scores=regions)
 
     def load_coverage_from_bigwig(self, filename: str, windows=None):
         """Load coverage data from a bigwig file.
@@ -114,6 +115,51 @@ class GCoverages:
                                                    len(self.coverage[r]),
                                                    self.bin_size)]
 
+    def calculate_coverage_GRegions2(self, scores, windows=None,
+                                     strandness: bool = False):
+        """Calculate the coverage from two GRegions. `windows` defines the loci
+        for the coverage `scores` contains the scores loaded into the coverage.
+
+        :param windows: Define the windows and the length of the coverage
+        :type windows: GRegions
+        :param scores: Provide the scores for calculating the coverage
+        :type scores: GRegions
+        :param strandness: Make this operation strandness specific, defaults
+                        to False
+        :type strandness: bool, optional
+        """
+        from genomkit import GRegions
+        assert isinstance(windows, GRegions)
+        assert isinstance(scores, GRegions)
+        print("1")
+        filtered_scores = scores.intersect(target=windows, mode="ORIGINAL")
+        print("2")
+        # Preallocate coverage arrays
+        # num_windows = len(windows)
+        num_bins = len(windows[0]) // self.bin_size
+        self.coverage = {region: np.zeros(shape=num_bins)
+                         for region in windows}
+        for target in tqdm(filtered_scores, desc=scores.name,
+                           total=len(filtered_scores)):
+            overlap_regions = [region for region in windows
+                               if region.overlap(target,
+                                                 strandness=strandness)]
+            start_inds = np.maximum(0,
+                                    target.start -
+                                    np.array([region.start
+                                              for region in overlap_regions]))
+            start_inds = start_inds // self.bin_size
+            end_inds = np.minimum([len(region)
+                                   for region in overlap_regions],
+                                  target.end -
+                                  np.array([region.start
+                                            for region in overlap_regions]))
+            end_inds = end_inds // self.bin_size
+            for region, start_ind, end_ind in zip(overlap_regions,
+                                                  start_inds,
+                                                  end_inds):
+                self.coverage[region][start_ind:end_ind] += target.score
+
     def calculate_coverage_GRegions(self, scores, windows=None,
                                     strandness: bool = False):
         """Calculate the coverage from two GRegions. `windows` defines the loci
@@ -132,8 +178,7 @@ class GCoverages:
         assert isinstance(scores, GRegions)
         filtered_scores = scores.intersect(target=windows,
                                            mode="ORIGINAL")
-        for region in tqdm(windows, desc="Calculating coverage",
-                           total=len(windows)):
+        for region in tqdm(windows, desc=scores.name, total=len(windows)):
             self.coverage[region] = np.zeros(shape=len(region) //
                                              self.bin_size)
             for target in filtered_scores:

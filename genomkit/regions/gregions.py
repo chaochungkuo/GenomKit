@@ -6,6 +6,7 @@ from .io import load_BED
 import os
 import sys
 from copy import deepcopy
+from tqdm import tqdm
 
 
 ###########################################################################
@@ -292,13 +293,13 @@ class GRegions:
         else:
             a = copy.deepcopy(self)
             b = copy.deepcopy(target)
-            if not a.sorted:
-                a.sort()
-            if not b.sorted:
-                b.sort()
-            if mode == "OVERLAP":
-                a.merge()
-                b.merge()
+            # if not a.sorted:
+            #     a.sort()
+            # if not b.sorted:
+            #     b.sort()
+            # if mode == "OVERLAP":
+            #     a.merge()
+            #     b.merge()
 
             iter_a = iter(a)
             s = next(iter_a)
@@ -309,111 +310,116 @@ class GRegions:
             cont_overlap = False
             # OVERLAP ###############################
             if mode == "OVERLAP":
-                while cont_loop:
-                    # When the regions overlap
-                    if s.overlap(b[j]):
-                        new_regions.add(GRegion(sequence=s.sequence,
-                                                start=max(s.start, b[j].start),
-                                                end=min(s.end, b[j].end),
-                                                name=s.name,
-                                                orientation=s.orientation,
-                                                data=s.data))
-                        if not cont_overlap:
-                            pre_inter = j
-                        if j == last_j:
+                with tqdm(total=len(b)) as pbar:
+                    while cont_loop:
+                        # When the regions overlap
+                        if s.overlap(b[j]):
+                            new_regions.add(GRegion(sequence=s.sequence,
+                                                    start=max(s.start,
+                                                              b[j].start),
+                                                    end=min(s.end, b[j].end),
+                                                    name=s.name,
+                                                    orientation=s.orientation,
+                                                    data=s.data))
+                            if not cont_overlap:
+                                pre_inter = j
+                            if j == last_j:
+                                try:
+                                    s = next(iter_a)
+                                except StopIteration:
+                                    cont_loop = False
+                            else:
+                                j += 1
+                            cont_overlap = True
+
+                        elif s < b[j]:
+                            try:
+                                s = next(iter_a)
+                                if s.sequence == b[j].sequence and pre_inter > 0:
+                                    j = pre_inter
+                                cont_overlap = False
+                            except StopIteration:
+                                cont_loop = False
+
+                        elif s > b[j]:
+                            if j == last_j:
+                                cont_loop = False
+                            else:
+                                j += 1
+                                cont_overlap = False
+                        else:
                             try:
                                 s = next(iter_a)
                             except StopIteration:
                                 cont_loop = False
-                        else:
-                            j += 1
-                        cont_overlap = True
-
-                    elif s < b[j]:
-                        try:
-                            s = next(iter_a)
-                            if s.sequence == b[j].sequence and pre_inter > 0:
-                                j = pre_inter
-                            cont_overlap = False
-                        except StopIteration:
-                            cont_loop = False
-
-                    elif s > b[j]:
-                        if j == last_j:
-                            cont_loop = False
-                        else:
-                            j += 1
-                            cont_overlap = False
-                    else:
-                        try:
-                            s = next(iter_a)
-                        except StopIteration:
-                            cont_loop = False
-
+                        pbar.update(1)
             # ORIGINAL ###############################
             if mode == "ORIGINAL":
-                while cont_loop:
-                    # When the regions overlap
-                    if s.overlap(b[j]):
-                        new_regions.add(s)
-                        try:
-                            s = next(iter_a)
-                        except StopIteration:
-                            cont_loop = False
-                    elif s < b[j]:
-                        try:
-                            s = next(iter_a)
-                        except StopIteration:
-                            cont_loop = False
-                    elif s > b[j]:
-                        if j == last_j:
-                            cont_loop = False
-                        else:
-                            j += 1
-                    else:
-                        try:
-                            s = next(iter_a)
-                        except StopIteration:
-                            cont_loop = False
-            # COMP_INCL ###############################
-            if mode == "COMP_INCL":
-                while cont_loop:
-                    # When the regions overlap
-                    if s.overlap(b[j]):
-                        if s.start >= b[j].start and s.end <= b[j].end:
+                with tqdm(total=len(b)) as pbar:
+                    while cont_loop:
+                        # When the regions overlap
+                        if s.overlap(b[j]):
                             new_regions.add(s)
-                        if not cont_overlap:
-                            pre_inter = j
-                        if j == last_j:
                             try:
                                 s = next(iter_a)
                             except StopIteration:
                                 cont_loop = False
+                        elif s < b[j]:
+                            try:
+                                s = next(iter_a)
+                            except StopIteration:
+                                cont_loop = False
+                        elif s > b[j]:
+                            if j == last_j:
+                                cont_loop = False
+                            else:
+                                j += 1
                         else:
-                            j += 1
-                        cont_overlap = True
+                            try:
+                                s = next(iter_a)
+                            except StopIteration:
+                                cont_loop = False
+                        pbar.update(1)
+            # COMP_INCL ###############################
+            if mode == "COMP_INCL":
+                with tqdm(total=len(b)) as pbar:
+                    while cont_loop:
+                        # When the regions overlap
+                        if s.overlap(b[j]):
+                            if s.start >= b[j].start and s.end <= b[j].end:
+                                new_regions.add(s)
+                            if not cont_overlap:
+                                pre_inter = j
+                            if j == last_j:
+                                try:
+                                    s = next(iter_a)
+                                except StopIteration:
+                                    cont_loop = False
+                            else:
+                                j += 1
+                            cont_overlap = True
 
-                    elif s < b[j]:
-                        try:
-                            s = next(iter_a)
-                            if s.sequence == b[j].sequence and pre_inter > 0:
-                                j = pre_inter
-                            cont_overlap = False
-                        except StopIteration:
-                            cont_loop = False
+                        elif s < b[j]:
+                            try:
+                                s = next(iter_a)
+                                if s.sequence == b[j].sequence and pre_inter > 0:
+                                    j = pre_inter
+                                cont_overlap = False
+                            except StopIteration:
+                                cont_loop = False
 
-                    elif s > b[j]:
-                        if j == last_j:
-                            cont_loop = False
+                        elif s > b[j]:
+                            if j == last_j:
+                                cont_loop = False
+                            else:
+                                j += 1
+                                cont_overlap = False
                         else:
-                            j += 1
-                            cont_overlap = False
-                    else:
-                        try:
-                            s = next(iter_a)
-                        except StopIteration:
-                            cont_loop = False
-
+                            try:
+                                s = next(iter_a)
+                            except StopIteration:
+                                cont_loop = False
+                        pbar.update(1)
             # if rm_duplicates:
             new_regions.remove_duplicates()
             # new_regions.sort()

@@ -160,3 +160,9 @@ cython_debug/
 #.idea/
 
 .vscode/
+
+tests/local_test/*.bed
+tests/local_test/*.fasta
+tests/local_test/*.bed
+
+.DS_Store
