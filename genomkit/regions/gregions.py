@@ -1064,3 +1064,8 @@ class GRegions:
             self.elements = res.elements
         else:
             return res
+
+    # def rename_by_GRegions(self, name_source, strandness: bool = True,
+    #                        inplace: bool = True):
+    #     assert isinstance(name_source, GRegions)
+        

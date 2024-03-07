@@ -1,5 +1,6 @@
 from .regions.gregion import GRegion
 from .regions.gregions import GRegions
+from .regions.gregions_intervaltree import GRegionsTree
 from .regions.gregions_set import GRegionsSet
 from .sequences.gsequence import GSequence
 from .sequences.gsequences import GSequences

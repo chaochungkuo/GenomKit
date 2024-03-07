@@ -6,3 +6,4 @@ tqdm
 pyBigWig==0.3.22
 pandas
 scipy
+intervaltree
