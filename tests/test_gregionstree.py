@@ -100,16 +100,6 @@ class TestGRegionsTree(unittest.TestCase):
         intersect = regions1.intersect(regions2, mode='COMP_INCL')
         self.assertEqual(len(intersect), 0)
 
-    # def test_intersect_array(self):
-    #     regions1 = GRegionsTree(name="test")
-    #     regions1.load(filename=os.path.join(script_path,
-    #                                         "test_files/bed/example.bed"))
-    #     regions2 = GRegionsTree(name="test")
-    #     regions2.load(filename=os.path.join(script_path,
-    #                                         "test_files/bed/example2.bed"))
-    #     intersect = regions1.intersect_array(regions2)
-    #     self.assertEqual(len(intersect), 4)
-
     def test_merge(self):
         regions = GRegionsTree(name="test")
         regions.load(filename=os.path.join(script_path,
@@ -134,44 +124,55 @@ class TestGRegionsTree(unittest.TestCase):
         regions.remove_duplicates()
         self.assertEqual(len(regions), 4)
 
-    # def test_sort(self):
-    #     regions = GRegionsTree(name="test")
-    #     regions.load(filename=os.path.join(script_path,
-    #                                        "test_files/bed/example4.bed"))
-    #     regions.sort()
-    ## Duplicate interval should be kept
-    #     self.assertEqual(len(regions), 6)
-    #     self.assertEqual(regions.get_sequences(),
-    #                      ["chr1", "chr1", "chr1", "chr2", "chr2", "chr2"])
+    def test_sort(self):
+        regions = GRegionsTree(name="test")
+        regions.load(filename=os.path.join(script_path,
+                                           "test_files/bed/example4.bed"))
+        regions.sort()
+        self.assertEqual(len(regions), 4)
+        self.assertEqual(sorted(regions.get_sequences()),
+                         ["chr1", "chr1", "chr2", "chr2"])
 
-    # def test_sampling(self):
-    #     regions = load_BED(filename=os.path.join(script_path,
-    #                        "test_files/bed/example4.bed"))
-    #     sampling = regions.sampling(size=3)
-    #     self.assertEqual(len(sampling), 3)
+    def test_sampling(self):
+        regions = GRegionsTree(
+            load=os.path.join(script_path, "test_files/bed/example4.bed"))
+        sampling = regions.sampling(size=3)
+        self.assertEqual(len(sampling), 3)
 
-    # def test_subtract(self):
-    #     regions1 = GRegionsTree(name="test")
-    #     regions1.load(filename=os.path.join(script_path,
-    #                                         "test_files/bed/example.bed"))
-    #     regions2 = GRegionsTree(name="test")
-    #     regions2.load(filename=os.path.join(script_path,
-    #                                         "test_files/bed/example2.bed"))
-    #     regions1.subtract(regions2)
-    #     self.assertEqual(len(regions1), 4)
-    #     self.assertEqual(len(regions1[0]), 500)
-    #     self.assertEqual(len(regions1[1]), 500)
-    #     self.assertEqual(len(regions1[2]), 500)
-    #     self.assertEqual(len(regions1[3]), 500)
-
-    #     # regions1 = GRegionsTree(name="test")
-    #     # regions1.load(filename=os.path.join(script_path,
-    #     #                                     "test_files/bed/example.bed"))
-    #     # regions2 = GRegionsTree(name="test")
-    #     # regions2.load(filename=os.path.join(script_path,
-    #     #                                     "test_files/bed/example2.bed"))
-    #     # regions1.subtract(regions2, whole_region=True)
-    #     # self.assertEqual(len(regions1[0]), 0)
+    def test_subtract(self):
+        regions1 = GRegionsTree(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example.bed"))
+        regions2 = GRegionsTree(name="test")
+        regions2.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example2.bed"))
+        regions1.subtract(regions2)
+        for r in regions1:
+            print(r)
+        self.assertEqual(len(regions1), 4)
+        self.assertEqual(len(regions1[0]), 500)
+        self.assertEqual(len(regions1[1]), 500)
+        self.assertEqual(len(regions1[2]), 500)
+        self.assertEqual(len(regions1[3]), 500)
+        regions1 = GRegionsTree(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example.bed"))
+        regions1.subtract(regions2, strandness=True)
+        for r in regions1:
+            print(r)
+        self.assertEqual(len(regions1), 4)
+        self.assertEqual(len(regions1[0]), 500)
+        self.assertEqual(len(regions1[1]), 1000)
+        self.assertEqual(len(regions1[2]), 1000)
+        self.assertEqual(len(regions1[3]), 500)
+        # regions1 = GRegionsTree(name="test")
+        # regions1.load(filename=os.path.join(script_path,
+        #                                     "test_files/bed/example.bed"))
+        # regions2 = GRegionsTree(name="test")
+        # regions2.load(filename=os.path.join(script_path,
+        #                                     "test_files/bed/example2.bed"))
+        # regions1.subtract(regions2, whole_region=True)
+        # self.assertEqual(len(regions1[0]), 0)
 
     # def test_total_coverage(self):
     #     regions1 = GRegionsTree(name="test")

@@ -448,7 +448,7 @@ class GRegionsTree:
         res = GRegionsTree(name="sampling")
         sampling = random.sample(range(len(self)), size)
         for i in sampling:
-            res.add(self.elements[i])
+            res.add(self[i])
         return res
 
     def split(self, ratio: float, size: int = None, seed: int = None):
@@ -534,7 +534,7 @@ class GRegionsTree:
         return len(intersect)
 
     def subtract(self, regions, whole_region: bool = False,
-                 merge: bool = True, exact: bool = False,
+                 strandness: bool = False, exact: bool = False,
                  inplace: bool = True):
         """Subtract regions from the self regions.
 
@@ -543,8 +543,8 @@ class GRegionsTree:
         :param whole_region: Subtract the whole region, not partially,
                              defaults to False
         :type whole_region: bool, default to False
-        :param merge: Merging the regions before subtracting
-        :type merge: bool, default to True
+        :param strandness: Define whether strandness is considered.
+        :type strandness: bool
         :param exact: Only regions which match exactly with a given region are
                       subtracted. If True, whole_region and merge are
                       completely ignored and the returned GRegions is sorted
@@ -562,7 +562,107 @@ class GRegionsTree:
             regions         ----------                    ----
             Result   -------                 ------
         """
-        pass
+        assert isinstance(regions, GRegionsTree)
+
+        def remain_interval(seq, begin, end, interval, res):
+            gr = GRegion(sequence=seq, start=begin, end=end,
+                         name=interval.data.name, score=interval.data.score,
+                         orientation=interval.data.orientation)
+            remain = Interval(begin, end, gr)
+            res.elements[seq].add(remain)
+
+        res = GRegionsTree(name=self.name)
+        for seq in self.elements.keys():
+            for interval in self.elements[seq]:
+                # Check if exact match is required
+                if exact:
+                    # If interval not found in regions, add it to result
+                    if interval not in regions.elements[seq]:
+                        res.elements[seq].add(interval)
+                elif whole_region:
+                    if any(regions.elements[seq].overlap(
+                            interval.begin, interval.end)):
+                        continue
+                elif strandness:
+                    for r in regions.elements[seq].overlap(
+                            interval.begin, interval.end):
+                        # interval       -----
+                        # r          --------------
+                        # remain
+                        if interval.begin > r.begin and \
+                                interval.end < r.end and \
+                                interval.data.orientation ==\
+                                r.data.orientation:
+                            continue
+                        # interval   --------------
+                        # r              -----
+                        # remain     ----     -----
+                        elif interval.begin < r.begin and \
+                                interval.end > r.end and \
+                                interval.data.orientation ==\
+                                r.data.orientation:
+                            remain_interval(seq, interval.begin, r.begin,
+                                            interval, res)
+                            remain_interval(seq, r.end, interval.end,
+                                            interval, res)
+                        # interval   -------
+                        # r              -------
+                        # remain     ----
+                        elif interval.begin < r.begin and \
+                                interval.end <= r.end and \
+                                interval.data.orientation ==\
+                                r.data.orientation:
+                            remain_interval(seq, interval.begin, r.begin,
+                                            interval, res)
+                        # interval      -------
+                        # r          -------
+                        # remain            ---
+                        elif interval.begin >= r.begin and \
+                                interval.end > r.end and \
+                                interval.data.orientation ==\
+                                r.data.orientation:
+                            remain_interval(seq, r.end, interval.end,
+                                            interval, res)
+                        else:
+                            res.elements[seq].add(interval)
+                else:
+                    for r in regions.elements[seq].overlap(
+                            interval.begin, interval.end):
+                        # interval       -----
+                        # r          --------------
+                        # remain
+                        if interval.begin > r.begin and \
+                                interval.end < r.end:
+                            continue
+                        # interval   --------------
+                        # r              -----
+                        # remain     ----     -----
+                        elif interval.begin < r.begin and \
+                                interval.end > r.end:
+                            remain_interval(seq, interval.begin, r.begin,
+                                            interval, res)
+                            remain_interval(seq, r.end, interval.end,
+                                            interval, res)
+                        # interval   -------
+                        # r              -------
+                        # remain     ----
+                        elif interval.begin < r.begin and \
+                                interval.end <= r.end:
+                            remain_interval(seq, interval.begin, r.begin,
+                                            interval, res)
+                        # interval      -------
+                        # r          -------
+                        # remain            ---
+                        elif interval.begin >= r.begin and \
+                                interval.end > r.end:
+                            remain_interval(seq, r.end, interval.end,
+                                            interval, res)
+                        else:
+                            res.elements[seq].add(interval)
+        if inplace:
+            self.elements = res.elements
+        else:
+            return res
 
     def get_GSequences(self, FASTA_file):
         """Return a GSequences object according to the loci on the given
