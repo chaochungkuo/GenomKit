@@ -33,7 +33,6 @@ class GRegionsTree:
         """
         self.elements = defaultdict(lambda: IntervalTree())
         self.name = name
-        self.sorted = False
         if load:
             self.load(load)
 
@@ -52,11 +51,11 @@ class GRegionsTree:
                 rest -= len(tree)
             else:
                 # print([rest, len(list(tree))])
-                return list(tree)[rest-1].data
+                return sorted(tree)[rest-1].data
 
     def __iter__(self):
         for tree in self.elements.values():
-            for interval in tree:
+            for interval in sorted(tree):
                 yield interval.data
 
     def add(self, region):
@@ -68,7 +67,6 @@ class GRegionsTree:
         self.elements[region.sequence].add(
             Interval(region.start, region.end, region)
         )
-        self.sorted = False
 
     def load(self, filename: str):
         """Load a BED file into the GRegions.
@@ -77,13 +75,6 @@ class GRegionsTree:
         :type filename: str
         """
         self.elements = load_BED_intervaltree(filename=filename)
-        self.sorted = False
-
-    def sort(self):
-        for name, tree in self.elements.items():
-            self.elements[name] = sorted(tree,
-                                         key=lambda interval: interval.begin)
-        self.sorted = True
 
     def write(self, filename: str, data: bool = False):
         """Write a BED file.
@@ -94,7 +85,7 @@ class GRegionsTree:
         :type data: bool
         """
         with open(filename, "w") as f:
-            for region in self.elements:
+            for region in self:
                 print(region.bed_entry(data=data), file=f)
 
     def get_sequences(self, unique: bool = False):
@@ -108,7 +99,7 @@ class GRegionsTree:
         res = [r.sequence for r in self]
         if unique:
             res = list(set(res))
-            res.sort()
+        res = sorted(res)
         return res
 
     def get_names(self, unique: bool = False):
@@ -118,7 +109,7 @@ class GRegionsTree:
         :return: A list of all regions' names.
         :rtype: list
         """
-        names = [r.name if r.name else r.toString() for r in self]
+        names = [r.name for r in self]
         if unique:
             names = list(set(names))
             names.sort()
@@ -157,15 +148,12 @@ class GRegionsTree:
                          r.end,
                          r)
             )
+            assert isinstance(res[r.sequence], IntervalTree)
         if inplace:
             self.elements = res
-            if sort:
-                self.sort()
         else:
             resGR = GRegionsTree(name=self.name)
             resGR.elements = res
-            if sort:
-                resGR.sort()
             return resGR
 
     def extend_fold(self, upstream: float = 0.0, downstream: float = 0.0,
@@ -202,13 +190,9 @@ class GRegionsTree:
             )
         if inplace:
             self.elements = res
-            if sort:
-                self.sort()
         else:
             resGR = GRegionsTree(name=self.name)
             resGR.elements = res
-            if sort:
-                resGR.sort()
             return resGR
 
     def load_chrom_size_file(self, file_path):
@@ -348,8 +332,6 @@ class GRegionsTree:
             self.elements[seq] = IntervalTree()
             for interval in unique_intervals:
                 self.elements[seq].add(interval)
-        if sort:
-            self.sort()
 
     def merge(self, by_name: bool = False, strandness: bool = False,
               inplace: bool = False):
@@ -383,8 +365,6 @@ class GRegionsTree:
                 res.elements[seq].add(curr_interval)
             return r
 
-        if not self.sorted:
-            self.sort()
         res = GRegionsTree(name=self.name)
         for seq in self.elements.keys():
             if len(self.elements[seq]) == 1:
@@ -491,9 +471,6 @@ class GRegionsTree:
         :return: Close regions
         :rtype: GRegions
         """
-        if not target.sorted:
-            target.sort()
-
         extended_regions = self.extend(upstream=max_dis, downstream=max_dis,
                                        inplace=False)
         potential_targets = target.intersect(extended_regions,
@@ -785,7 +762,49 @@ class GRegionsTree:
         else:
             return res
 
-    # def rename_by_GRegionsTree(self, name_source, strandness: bool = True,
-    #                        inplace: bool = True):
-    #     assert isinstance(name_source, GRegions)
-        
+    def rename_by_GRegions(self, name_source, strandness: bool = True,
+                           inplace: bool = True):
+        """Rename the regions' names by the given GRegions.
+
+        :param name_source: A GRegions where the names are taken as sources.
+        :type name_source: GRegions
+        :param strandness: Define whether strandness is considered.
+        :type strandness: bool
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object.
+        :type inplace: bool, default to True
+        """
+        def new_interval(seq, interval, r, res):
+            res.elements[seq].add(
+                Interval(interval.begin, interval.end,
+                         GRegion(sequence=interval.data.sequence,
+                                 start=interval.data.start,
+                                 end=interval.data.end,
+                                 name=r.data.name,
+                                 score=interval.data.score,
+                                 orientation=interval.data.orientation,
+                                 data=interval.data.data)))
+        assert isinstance(name_source, GRegionsTree)
+
+        res = GRegionsTree(name=self.name)
+        for seq in tqdm(self.elements.keys(), desc="Renaming"):
+            for interval in self.elements[seq]:
+                if any(name_source.elements[seq].overlap(
+                            interval.begin, interval.end)):
+                    for r in name_source.elements[seq].overlap(
+                            interval.begin, interval.end):
+                        if strandness:
+                            if interval.data.orientation == r.data.orientation:
+                                new_interval(seq, interval, r, res)
+                            else:
+                                res.elements[seq].add(interval)
+                        else:
+                            new_interval(seq, interval, r, res)
+                else:
+                    res.elements[seq].add(interval)
+        # names = res.get_names()
+        # print(names)
+        if inplace:
+            self.elements = res.elements
+        else:
+            return res

@@ -83,7 +83,6 @@ class TestGRegionsTree(unittest.TestCase):
         regions2.load(filename=os.path.join(script_path,
                                             "test_files/bed/example2.bed"))
         intersect = regions1.intersect(regions2, mode='OVERLAP')
-        intersect.sort()
         for r in intersect:
             print(r)
         self.assertEqual(len(intersect), 4)
@@ -124,15 +123,6 @@ class TestGRegionsTree(unittest.TestCase):
         regions.remove_duplicates()
         self.assertEqual(len(regions), 4)
 
-    def test_sort(self):
-        regions = GRegionsTree(name="test")
-        regions.load(filename=os.path.join(script_path,
-                                           "test_files/bed/example4.bed"))
-        regions.sort()
-        self.assertEqual(len(regions), 4)
-        self.assertEqual(sorted(regions.get_sequences()),
-                         ["chr1", "chr1", "chr2", "chr2"])
-
     def test_sampling(self):
         regions = GRegionsTree(
             load=os.path.join(script_path, "test_files/bed/example4.bed"))
@@ -163,8 +153,8 @@ class TestGRegionsTree(unittest.TestCase):
         self.assertEqual(len(regions1), 4)
         self.assertEqual(len(regions1[0]), 500)
         self.assertEqual(len(regions1[1]), 1000)
-        self.assertEqual(len(regions1[2]), 1000)
-        self.assertEqual(len(regions1[3]), 500)
+        self.assertEqual(len(regions1[2]), 500)
+        self.assertEqual(len(regions1[3]), 1000)
         # regions1 = GRegionsTree(name="test")
         # regions1.load(filename=os.path.join(script_path,
         #                                     "test_files/bed/example.bed"))
@@ -179,6 +169,18 @@ class TestGRegionsTree(unittest.TestCase):
     #     regions1.load(filename=os.path.join(script_path,
     #                                         "test_files/bed/example.bed"))
     #     self.assertEqual(regions1.total_coverage(), 4000)
+
+    def test_rename_by_GRegions(self):
+        regions1 = GRegionsTree(name="test")
+        regions1.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example.bed"))
+        regions2 = GRegionsTree(name="test")
+        regions2.load(filename=os.path.join(script_path,
+                                            "test_files/bed/example2.bed"))
+        regions1.rename_by_GRegions(regions2)
+        for r in regions1:
+            print(r)
+        self.assertEqual(len(regions1), 4)
 
 
 if __name__ == '__main__':
