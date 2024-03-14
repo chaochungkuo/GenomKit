@@ -21,7 +21,7 @@ def load_FASTA_from_file(file):
     current_sequence = ""
     total_lines = sum(1 for line in file if not line.startswith("#"))
     file.seek(0)  # Reset file pointer to the beginning
-    with tqdm(total=total_lines) as pbar:
+    with tqdm(total=total_lines, desc="Load FASTA") as pbar:
         for line in file:
             line = line.strip()
             if line.startswith("#"):
@@ -69,7 +69,7 @@ def load_FASTQ_from_file(file):
     total_records = sum(1 for _ in file) // 4  # Calculate total records
     file.seek(0)  # Reset file pointer to the beginning
 
-    with tqdm(total=total_records) as pbar:
+    with tqdm(total=total_records, desc="Load FASTQ") as pbar:
         for line_num, line in enumerate(file):
             line = line.strip()
             if line.startswith("#"):

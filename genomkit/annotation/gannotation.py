@@ -28,7 +28,7 @@ class GAnnotation:
         open_func = gzip.open if self.file_path.endswith('.gz') else open
         total_lines = sum(1 for _ in open_func(self.file_path, 'rt'))
         with open_func(self.file_path, 'rt') as f:
-            for line in tqdm(f, total=total_lines, desc="Loading Data"):
+            for line in tqdm(f, total=total_lines, desc="Loading GTF"):
                 if line.startswith('#'):
                     continue
                 fields = line.strip().split('\t')

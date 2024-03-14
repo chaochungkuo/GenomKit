@@ -310,7 +310,7 @@ class GRegions:
             cont_overlap = False
             # OVERLAP ###############################
             if mode == "OVERLAP":
-                with tqdm(total=len(b)) as pbar:
+                with tqdm(total=len(b), desc="Calculate intersects") as pbar:
                     while cont_loop:
                         # When the regions overlap
                         if s.overlap(b[j]):
@@ -355,7 +355,7 @@ class GRegions:
                         pbar.update(1)
             # ORIGINAL ###############################
             if mode == "ORIGINAL":
-                with tqdm(total=len(b)) as pbar:
+                with tqdm(total=len(b), desc="Calculate intersects") as pbar:
                     while cont_loop:
                         # When the regions overlap
                         if s.overlap(b[j]):
@@ -382,7 +382,7 @@ class GRegions:
                         pbar.update(1)
             # COMP_INCL ###############################
             if mode == "COMP_INCL":
-                with tqdm(total=len(b)) as pbar:
+                with tqdm(total=len(b), desc="Calculate intersects") as pbar:
                     while cont_loop:
                         # When the regions overlap
                         if s.overlap(b[j]):
