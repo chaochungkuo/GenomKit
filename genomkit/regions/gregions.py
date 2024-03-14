@@ -335,7 +335,8 @@ class GRegions:
                         elif s < b[j]:
                             try:
                                 s = next(iter_a)
-                                if s.sequence == b[j].sequence and pre_inter > 0:
+                                if s.sequence == b[j].sequence and \
+                                        pre_inter > 0:
                                     j = pre_inter
                                 cont_overlap = False
                             except StopIteration:
@@ -402,7 +403,8 @@ class GRegions:
                         elif s < b[j]:
                             try:
                                 s = next(iter_a)
-                                if s.sequence == b[j].sequence and pre_inter > 0:
+                                if s.sequence == b[j].sequence and \
+                                        pre_inter > 0:
                                     j = pre_inter
                                 cont_overlap = False
                             except StopIteration:
