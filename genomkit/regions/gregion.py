@@ -236,7 +236,7 @@ class GRegion:
         :rtype: GRegion
         """
         if center == "mid_point":
-            center = int(0.5*(self.end-self.start))
+            center = self.start + int(0.5*(self.end-self.start))
             if self.orientation == "-":
                 start = center-extend_downstream
                 end = center+extend_upstream
@@ -261,6 +261,10 @@ class GRegion:
                 center = self.end
                 start = center-extend_upstream
                 end = center+extend_downstream
+        if start < 0:
+            start = 0
+        if end < 0:
+            end = 0
         res = GRegion(sequence=self.sequence, start=start, end=end,
                       orientation=self.orientation, score=self.score,
                       name=self.name, data=self.data)

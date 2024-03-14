@@ -130,7 +130,7 @@ class GSequences:
                 return seq.slice_sequence(start, end)
 
     def write_FASTA(self, filename: str, data: bool = False,
-                    gz: bool = True):
+                    gz: bool = False):
         write_FASTA(seqs=self, filename=filename, data=data, gz=gz)
 
     def write_FASTQ(self, filename: str, data: bool = False,

@@ -30,7 +30,7 @@ def load_FASTA_from_file(file):
                 # If there was a previously stored sequence, store it
                 if current_sequence_id is not None:
                     infos = re.split(r'[ |;,-]', current_sequence_id)
-                    name = infos[0]
+                    name = infos[0].split(".")[0]
                     data = infos[1:]
                     res.add(GSequence(sequence=current_sequence,
                                       name=name, data=data))
@@ -45,7 +45,7 @@ def load_FASTA_from_file(file):
         # Store the last sequence
         if current_sequence_id is not None:
             infos = re.split(r'[ |;,-]', current_sequence_id)
-            name = infos[0]
+            name = infos[0].split(".")[0]
             data = infos[1:]
             res.add(GSequence(sequence=current_sequence,
                               name=name, data=data))
@@ -106,7 +106,7 @@ def load_FASTQ_from_file(file):
 
 
 def write_FASTA(seqs, filename: str, data: bool = False,
-                gz: bool = True):
+                gz: bool = False):
     if gz:
         with gzip.open(filename, "wt") as fasta_file:
             write_fasta_content(seqs, fasta_file, data)

@@ -958,12 +958,12 @@ class GRegions:
             print(FASTA_file + " is not found.")
             sys.exit()
         res = GSequences(name=self.name)
-        for region in self.elements:
+        for region in tqdm(self.elements, desc="Get GSequences"):
             seq = fasta.get_sequence(name=region.sequence,
                                      start=region.start,
                                      end=region.end)
             if seq:
-                seq.name = region.name
+                seq.name = str(region)
                 seq.data = region.data
                 if region.orientation == "-":
                     seq.reverse_complement()
