@@ -962,11 +962,12 @@ class GRegions:
             seq = fasta.get_sequence(name=region.sequence,
                                      start=region.start,
                                      end=region.end)
-            seq.name = region.name
-            seq.data = region.data
-            if region.orientation == "-":
-                seq.reverse_complement()
-            res.add(seq)
+            if seq:
+                seq.name = region.name
+                seq.data = region.data
+                if region.orientation == "-":
+                    seq.reverse_complement()
+                res.add(seq)
         return res
 
     def cluster(self, max_distance):
@@ -1037,8 +1038,8 @@ class GRegions:
         else:
             return res
 
-    def filter_by_score(self, larger_than=0, smaller_than=0, inplace=False):
-        """Filter the elements by the given list of names
+    def filter_by_score(self, larger_than=None, smaller_than=None, inplace=False):
+        """Filter the elements by the given range of scores
 
         :param larger_than: Define the minimal cutoff. Any region with the
                             score larger than this value will be returned.
@@ -1053,13 +1054,18 @@ class GRegions:
         :rtype: GRegions
         """
         res = GRegions(name=self.name)
-        for r in self.elements:
-            if r.score > larger_than:
-                res.add(r)
-            elif r.score < smaller_than:
-                res.add(r)
-            else:
-                continue
+        if larger_than and smaller_than:
+            for r in self.elements:
+                if larger_than < r.score < smaller_than:
+                    res.add(r)
+        elif larger_than and not smaller_than:
+            for r in self.elements:
+                if r.score > larger_than:
+                    res.add(r)
+        elif not larger_than and smaller_than:
+            for r in self.elements:
+                if r.score < smaller_than:
+                    res.add(r)
         if inplace:
             self.elements = res.elements
         else:

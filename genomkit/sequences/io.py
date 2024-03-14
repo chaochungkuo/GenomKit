@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import gzip
+import re
 
 
 ###########################################################################
@@ -28,7 +29,7 @@ def load_FASTA_from_file(file):
             elif line.startswith(">"):
                 # If there was a previously stored sequence, store it
                 if current_sequence_id is not None:
-                    infos = current_sequence_id.split()
+                    infos = re.split(r'[ |;,-]', current_sequence_id)
                     name = infos[0]
                     data = infos[1:]
                     res.add(GSequence(sequence=current_sequence,
@@ -43,7 +44,7 @@ def load_FASTA_from_file(file):
             pbar.update(1)
         # Store the last sequence
         if current_sequence_id is not None:
-            infos = current_sequence_id.split()
+            infos = re.split(r'[ |;,-]', current_sequence_id)
             name = infos[0]
             data = infos[1:]
             res.add(GSequence(sequence=current_sequence,

@@ -2,6 +2,8 @@ from genomkit import GRegions
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
+import glob
+import os
 
 
 class GRegionsSet:
@@ -38,6 +40,19 @@ class GRegionsSet:
         """
         self.collection[name] = regions
 
+    def load_pattern(self, pattern):
+        """Load multiple BED files with a regex pattern.
+
+        :param pattern: Regex pattern
+        :type pattern: str
+        """
+        file_paths = glob.glob(pattern)
+        for bed in file_paths:
+            name = os.path.basename(bed)
+            regions = GRegions(name=name,
+                               load=bed)
+            self.add(name=name, regions=regions)
+
     def __len__(self):
         """Return the number of GRegions in this set.
 
@@ -55,8 +70,8 @@ class GRegionsSet:
     #             f" object has no attribute '{key}'"
     #             )
 
-    def __setattr__(self, key, value):
-        self.collection[key] = value
+    # def __setattr__(self, key, value):
+    #     self.collection[key] = value
 
     def get_names(self):
         """Return the names of all GRegions.
@@ -110,3 +125,42 @@ class GRegionsSet:
         contingency_table = self.count_overlaps(query_set=another_set)
         chi2_stat, p_val, _, _ = chi2_contingency(contingency_table)
         return chi2_stat, p_val
+
+    def subtract(self, regions, whole_region: bool = False,
+                 merge: bool = True, exact: bool = False):
+        """Perform inplace subtract in all GRegions.
+
+        :param regions: GRegions which to subtract by
+        :type regions: GRegions
+        :param whole_region: Subtract the whole region, not partially,
+                             defaults to False
+        :type whole_region: bool, default to False
+        :param merge: Merging the regions before subtracting
+        :type merge: bool, default to True
+        :param exact: Only regions which match exactly with a given region are
+                      subtracted. If True, whole_region and merge are
+                      completely ignored and the returned GRegions is sorted
+                      and does not contain duplicates.
+        :type exact: bool, default to False
+        """
+        for grs in self.collection.values():
+            grs.subtract(regions, whole_region, merge, exact, inplace=True)
+
+    def resize(self, extend_upstream: int, extend_downstream: int,
+               center="mid_point"):
+        for grs in self.collection.values():
+            grs.resize(extend_upstream=extend_upstream,
+                       extend_downstream=extend_downstream,
+                       center=center, inplace=True)
+
+    def combine(self):
+        """Return a GRegions by combining all regions.
+
+        :return: GRegions
+        :rtype: GRegions
+        """
+        res = GRegions(name="combined")
+        for grs in self.collection.values():
+            for r in grs:
+                res.add(r)
+        return res
