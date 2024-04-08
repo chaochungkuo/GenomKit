@@ -14,7 +14,6 @@ import pandas as pd
 from tqdm import tqdm
 
 from genomkit import GRegions
-from genomkit import GRegionsTree
 
 
 # Define test cases
@@ -111,8 +110,8 @@ for case_name, regions1_file_path, regions2_file_path, mode in tqdm(test_cases):
 
     ############# GRegionsTree Evaluation #############
     start_time = timeit.default_timer()
-    regions1 = GRegionsTree(name="genes", load=regions1_file_path)
-    regions2 = GRegionsTree(name="genes", load=regions2_file_path)
+    regions1 = GRegions(name="genes", load=regions1_file_path, implementation="tree")
+    regions2 = GRegions(name="genes", load=regions2_file_path, implementation="tree")
     construction_time_tree = timeit.default_timer() - start_time
     execution_time_tree = timeit.timeit(lambda: time_intersect_tree(regions1, regions2, mode), number=repeat_num)
     mem_usage_tree = memory_profiler.memory_usage((time_intersect_tree, (regions1, regions2, mode)))

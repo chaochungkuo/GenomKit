@@ -1,5 +1,5 @@
 import random
-from genomkit import GRegion
+from genomkit import GRegion, GRegions
 import copy
 import numpy as np
 from .io import load_BED_intervaltree
@@ -14,7 +14,7 @@ from collections import defaultdict
 ###########################################################################
 # GRegions
 ###########################################################################
-class GRegionsTree:
+class GRegionsTree(GRegions):
     """
     GRegionsTree module
 
@@ -23,7 +23,7 @@ class GRegionsTree:
     interactions of many genomic coordinates.
     """
 
-    def __init__(self, name: str = "", load: str = ""):
+    def __init__(self, name: str = "", load: str = "", implementation: str = "tree"):
         """Create an empty GRegions object. If a path to a BED file is defined
         in "load", all the regions will be loaded.
 
@@ -32,6 +32,7 @@ class GRegionsTree:
         :param load: Path to a BED file, defaults to ""
         :type load: str, optional
         """
+        self.implementation = "tree"
         self.elements = defaultdict(lambda: IntervalTree())
         self.name = name
         if load:
@@ -144,7 +145,7 @@ class GRegionsTree:
         if inplace:
             self.elements = res
         else:
-            resGR = GRegionsTree(name=self.name)
+            resGR = GRegions(name=self.name, implementation="tree")
             resGR.elements = res
             return resGR
 
@@ -181,7 +182,7 @@ class GRegionsTree:
         if inplace:
             self.elements = res
         else:
-            resGR = GRegionsTree(name=self.name)
+            resGR = GRegions(name=self.name, implementation="tree")
             resGR.elements = res
             return resGR
 
@@ -220,7 +221,7 @@ class GRegionsTree:
         :return: A resized GRegion
         :rtype: GRegion
         """
-        res = GRegionsTree(name=self.name + "_resize")
+        res = GRegions(name=self.name, implementation="tree")
         for region in self.elements:
             res.add(region.resize(extend_upstream=extend_upstream, extend_downstream=extend_downstream, center=center))
         if inplace:
@@ -278,8 +279,9 @@ class GRegionsTree:
         :rtype: GRegions
         """
         assert isinstance(target, GRegionsTree)
+        super().intersect(target)
         common_seq = list(set(self.get_sequences(unique=True)) & set(target.get_sequences(unique=True)))
-        res = GRegionsTree()
+        res = GRegions(name=self.name, implementation="tree")
         # ORIGINAL ###############################
         if mode == "ORIGINAL":
             for seq in common_seq:
@@ -354,7 +356,7 @@ class GRegionsTree:
                 res.elements[seq].add(curr_interval)
             return r
 
-        res = GRegionsTree(name=self.name)
+        res = GRegions(name=self.name, implementation="tree")
         for seq in self.elements.keys():
             if len(self.elements[seq]) == 1:
                 res.elements[seq].add(*self.elements[seq])
@@ -406,7 +408,7 @@ class GRegionsTree:
         """
         if seed:
             random.seed(seed)
-        res = GRegionsTree(name="sampling")
+        res = GRegions(name="sampling", implementation="tree")
         sampling = random.sample(range(len(self)), size)
         for i in sampling:
             res.add(self[i])
@@ -431,8 +433,8 @@ class GRegionsTree:
         elif ratio and not size:
             size = int(len(self) * ratio)
             sampling = random.sample(range(len(self)), size)
-        a = GRegionsTree(name=self.name + "_split1")
-        b = GRegionsTree(name=self.name + "_split2")
+        a = GRegions(name=self.name + "_split1", implementation="tree")
+        b = GRegions(name=self.name + "_split2", implementation="tree")
         for i in range(len(self)):
             if i in sampling:
                 a.add(self.elements[i])
@@ -452,16 +454,17 @@ class GRegionsTree:
         :return: Close regions
         :rtype: GRegions
         """
+        super().close_regions(target)
         extended_regions = self.extend(upstream=max_dis, downstream=max_dis, inplace=False)
         potential_targets = target.intersect(extended_regions, mode="ORIGINAL")
         return potential_targets
 
     def get_elements_by_seq(self, sequence: str, orientation: str = None):
         if orientation is None:
-            regions = GRegionsTree(name=sequence)
+            regions = GRegions(name=sequence, implementation="tree")
             regions.elements = [r for r in self.elements if r.sequence == sequence]
         else:
-            regions = GRegionsTree(name=sequence + " " + orientation)
+            regions = GRegions(name=sequence + " " + orientation, implementation="tree")
             regions.elements = [r for r in self.elements if r.sequence == sequence and r.orientation == orientation]
         return regions
 
@@ -480,6 +483,7 @@ class GRegionsTree:
         return set(positions)
 
     def overlap_count(self, target):
+        super().overlap_count(target)
         intersect = self.intersect(target, mode="ORIGINAL")
         return len(intersect)
 
@@ -526,7 +530,7 @@ class GRegionsTree:
             remain = Interval(begin, end, gr)
             res.elements[seq].add(remain)
 
-        res = GRegionsTree(name=self.name)
+        res = GRegions(name=self.name, implementation="tree")
         for seq in self.elements.keys():
             for interval in self.elements[seq]:
                 # Check if exact match is required
@@ -651,11 +655,11 @@ class GRegionsTree:
             Result(d=10)   ---------------------------------------------
         """
         if len(self) == 0:
-            return GRegionsTree()
+            return GRegions(implementation="tree")
         elif len(self) == 1:
             return self
         else:
-            z = GRegionsTree("Clustered region set")
+            z = GRegions("Clustered region set", implementation="tree")
             previous = deepcopy(self.elements[0])
             for s in self.elements[1:]:
                 s_ext = s.extend(upstream=max_distance, downstream=max_distance, inplace=False)
@@ -689,7 +693,7 @@ class GRegionsTree:
         :return: A GRegions with filtered regions
         :rtype: GRegions
         """
-        res = GRegionsTree(name=self.name)
+        res = GRegions(name=self.name, implementation="tree")
         for r in self.elements:
             if r.name in names:
                 res.add(r)
@@ -713,7 +717,7 @@ class GRegionsTree:
         :return: A GRegions with filtered regions
         :rtype: GRegions
         """
-        res = GRegionsTree(name=self.name)
+        res = GRegions(name=self.name, implementation="tree")
         for r in self.elements:
             if r.score > larger_than:
                 res.add(r)
@@ -757,7 +761,7 @@ class GRegionsTree:
 
         assert isinstance(name_source, GRegionsTree)
 
-        res = GRegionsTree(name=self.name)
+        res = GRegions(name=self.name, implementation="tree")
         for seq in tqdm(self.elements.keys(), desc="Renaming"):
             for interval in self.elements[seq]:
                 if any(name_source.elements[seq].overlap(interval.begin, interval.end)):
