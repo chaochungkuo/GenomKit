@@ -105,25 +105,35 @@ def load_FASTQ_from_file(file):
     return res
 
 
-def write_FASTA(seqs, filename: str, data: bool = False,
+def write_FASTA(input_object, filename: str, data: bool = False,
                 gz: bool = False):
+    from genomkit import GSequence, GSequences
     if gz:
-        with gzip.open(filename, "wt") as fasta_file:
-            write_fasta_content(seqs, fasta_file, data)
+        if isinstance(input_object, GSequence):
+            with gzip.open(filename, "wt") as fasta_file:
+                write_fasta_content(input_object, fasta_file, data)
+        elif isinstance(input_object, GSequences):
+            with gzip.open(filename, "wt") as fasta_file:
+                for seq in input_object.elements:
+                    write_fasta_content(seq, fasta_file, data)
     else:
-        with open(filename, "w") as fasta_file:
-            write_fasta_content(seqs, fasta_file, data)
+        if isinstance(input_object, GSequence):
+            with open(filename, "w") as fasta_file:
+                write_fasta_content(input_object, fasta_file, data)
+        elif isinstance(input_object, GSequences):
+            with open(filename, "w") as fasta_file:
+                for seq in input_object.elements:
+                    write_fasta_content(seq, fasta_file, data)
 
 
-def write_fasta_content(seqs, fasta_file, data: bool):
-    for seq in seqs.elements:
-        if data:
-            fasta_file.write(">" + seq.name + " " +
-                             " ".join(seq.data) + "\n")
-        else:
-            fasta_file.write(f">{seq.name}\n")
-        for i in range(0, len(seq.sequence), 80):
-            fasta_file.write(f"{seq.sequence[i:i+80]}\n")
+def write_fasta_content(seq, fasta_file, data: bool):
+    if data:
+        fasta_file.write(">" + seq.name + " " +
+                         " ".join(seq.data) + "\n")
+    else:
+        fasta_file.write(f">{seq.name}\n")
+    for i in range(0, len(seq.sequence), 80):
+        fasta_file.write(f"{seq.sequence[i:i+80]}\n")
 
 
 def write_FASTQ(seqs, filename: str, data: bool = False, gz: bool = True):

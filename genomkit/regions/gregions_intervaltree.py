@@ -1,6 +1,5 @@
 import random
 from genomkit import GRegion
-import copy
 import numpy as np
 from .io import load_BED_intervaltree
 import os

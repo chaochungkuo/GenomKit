@@ -17,7 +17,7 @@ For example, you have a BED file for all the exons from hg38. Now you want to ge
 
     exons = GRegions(name="exons", load="hg38_exons.bed")
     exon_seqs = exons.get_GSequences(FASTA_file=FASTA_hg38)
-    exon_seqs.write_fasta(filename="hg38_exons.fasta")
+    exon_seqs.write_FASTA(filename="hg38_exons.fasta")
 
 
 Get TSSs (Transcription Start Sites) and TTSs (Transcription Termination Sites) of genes in a BED file
