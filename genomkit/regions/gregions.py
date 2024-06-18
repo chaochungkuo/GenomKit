@@ -1076,4 +1076,10 @@ class GRegions:
     # def rename_by_GRegions(self, name_source, strandness: bool = True,
     #                        inplace: bool = True):
     #     assert isinstance(name_source, GRegions)
-        
+
+    def count_per_seq(self):
+        res = {}
+        for seq in self.elements.keys():
+            c = len(self.elements[seq])
+            res[seq] = c
+        return res
