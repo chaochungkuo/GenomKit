@@ -131,7 +131,7 @@ class GSequences:
 
     def write_FASTA(self, filename: str, data: bool = False,
                     gz: bool = False):
-        write_FASTA(seqs=self, filename=filename, data=data, gz=gz)
+        write_FASTA(input_object=self, filename=filename, data=data, gz=gz)
 
     def write_FASTQ(self, filename: str, data: bool = False,
                     gz: bool = True):

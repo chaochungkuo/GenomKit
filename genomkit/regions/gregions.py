@@ -1076,10 +1076,22 @@ class GRegions:
     # def rename_by_GRegions(self, name_source, strandness: bool = True,
     #                        inplace: bool = True):
     #     assert isinstance(name_source, GRegions)
+    def remove_by_names(self, names, inplace=False):
+        """Remove the elements by the given list of names
 
-    def count_per_seq(self):
-        res = {}
-        for seq in self.elements.keys():
-            c = len(self.elements[seq])
-            res[seq] = c
-        return res
+        :param names: A list of names for removing
+        :type names: list
+        :param inplace: Define whether this operation will be applied on the
+                        same object (True) or return a new object.
+        :type inplace: bool, default to True
+        :return: A GRegions after removal of region names
+        :rtype: GRegions
+        """
+        res = GRegions(name=self.name)
+        for r in self.elements:
+            if r.name not in names:
+                res.add(r)
+        if inplace:
+            self.elements = res.elements
+        else:
+            return res
