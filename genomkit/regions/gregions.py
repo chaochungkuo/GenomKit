@@ -1095,3 +1095,10 @@ class GRegions:
             self.elements = res.elements
         else:
             return res
+
+    def count_per_seq(self):
+        res = {}
+        for seq in self.elements.keys():
+            c = len(self.elements[seq])
+            res[seq] = c
+        return res
