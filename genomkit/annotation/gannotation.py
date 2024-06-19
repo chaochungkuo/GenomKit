@@ -54,10 +54,10 @@ class GAnnotation:
                         'start': int(fields[3]),
                         'end': int(fields[4]),
                         'strand': fields[6],
-                        'gene_name': attributes.get(
-                            'gene_name', '').replace('"', ''),
-                        'gene_type': attributes.get(
-                            'gene_type', '').replace('"', '')
+                        'gene_name':
+                            attributes.get('gene_name', '').replace('"', ''),
+                        'gene_type':
+                            attributes.get('gene_type', '').replace('"', '')
                     }
                 elif feature_type == 'transcript':
                     transcript_id = attributes['transcript_id'].strip('"')
@@ -69,6 +69,10 @@ class GAnnotation:
                         'start': int(fields[3]),
                         'end': int(fields[4]),
                         'strand': fields[6],
+                        'gene_name':
+                            attributes.get('gene_name', '').replace('"', ''),
+                        'gene_type':
+                            attributes.get('gene_type', '').replace('"', ''),
                         'transcript_type':
                             attributes.get('transcript_type', '')
                     }
@@ -81,12 +85,17 @@ class GAnnotation:
                     gene_id = attributes['gene_id'].strip('"')
                     self.exons[exon_id] = {
                         'id': exon_id,
+                        'exon_number': attributes['exon_number'],
                         'transcript_id': transcript_id,
                         'gene_id': gene_id,
                         'chr': fields[0],
                         'start': int(fields[3]),
                         'end': int(fields[4]),
-                        'strand': fields[6]
+                        'strand': fields[6],
+                        'gene_name':
+                            attributes.get('gene_name', '').replace('"', ''),
+                        'gene_type':
+                            attributes.get('gene_type', '').replace('"', ''),
                     }
                     if transcript_id in self.transcripts:
                         self.transcripts[transcript_id].setdefault(
