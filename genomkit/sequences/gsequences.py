@@ -2,6 +2,7 @@ from .io import load_FASTA, load_FASTA_from_file, \
                 load_FASTQ, load_FASTQ_from_file, \
                 write_FASTA, write_FASTQ
 import gzip
+from tqdm import tqdm
 
 
 ###########################################################################
@@ -136,3 +137,22 @@ class GSequences:
     def write_FASTQ(self, filename: str, data: bool = False,
                     gz: bool = True):
         write_FASTQ(seqs=self, filename=filename, data=data, gz=gz)
+
+    def extract_seqs_by_regions(self, regions):
+        """Return another GSequences according to the given GRegions.
+
+        :param regions: A GRegions
+        :type regions: GRegions
+        """
+        res = GSequences(name=regions.name)
+        for region in tqdm(regions.elements, desc="Get GSequences"):
+            seq = self.get_sequence(name=region.sequence,
+                                    start=region.start,
+                                    end=region.end)
+            if seq:
+                seq.name = str(region)
+                seq.data = region.data
+                if region.orientation == "-":
+                    seq.reverse_complement()
+                res.add(seq)
+        return res
