@@ -9,6 +9,7 @@ Here is a list of some tutorials for GenomKit in handling various bioinformatic 
    These tutorials are still under active development.
 
 .. toctree::
+   examples_fasta
    examples_fastq
    examples_bed
    examples_gtf
