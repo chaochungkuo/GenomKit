@@ -1,7 +1,7 @@
 numpy
-pysam
+pysam==0.22.0
 tqdm
-pyBigWig
+pyBigWig==0.3.23
 pandas
 scipy
 intervaltree
