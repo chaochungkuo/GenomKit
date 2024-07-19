@@ -11,4 +11,4 @@ from .coverages.gcoverages_set import GCoveragesSet
 from .variants.gvariant import GVariant
 from .variants.gvariants import GVariants
 
-__version__ = "0.2.8"
+__version__ = "0.2.9"
